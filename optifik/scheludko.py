@@ -1,6 +1,6 @@
 import numpy as np
 
-from .io import load_spectrum
+
 from scipy.optimize import curve_fit
 
 import matplotlib.pyplot as plt
@@ -12,8 +12,9 @@ plt.rcParams.update({
     'legend.fontsize': 23,
 })
 
-
+from .io import load_spectrum
 from .utils import OptimizeResult
+from .analysis import finds_peak
 
 def thickness_scheludko_at_order(wavelengths, 
                                  intensity, 
@@ -114,9 +115,8 @@ def Delta_fit(xdata, thickness, interference_order):
 
 def thickness_from_scheludko(lambdas, 
                              smoothed_intensities,
-                             peaks_min, 
-                             peaks_max,
                              refractive_index, 
+                             min_peak_prominence,
                              plot=None):
     """
     
@@ -129,10 +129,6 @@ def thickness_from_scheludko(lambdas,
         DESCRIPTION.
     smoothed_intensities : TYPE
         DESCRIPTION.
-    peaks_min : TYPE
-        DESCRIPTION.
-    peaks_max : TYPE
-        DESCRIPTION.
     refractive_index : TYPE
         DESCRIPTION.
     plot : TYPE, optional
@@ -144,8 +140,12 @@ def thickness_from_scheludko(lambdas,
         DESCRIPTION.
 
     """
-    
+    max_tested_order = 12
     r_index = refractive_index
+    
+    peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=min_peak_prominence,
+                                                     plot=False)
     
     
     lambda_min = lambdas[peaks_min[-1]]
@@ -169,11 +169,12 @@ def thickness_from_scheludko(lambdas,
         plt.ylabel(r'$h$ ($\mathrm{{nm}}$)')
         plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
         
-    for m in range(0, 9):
+    
+    for m in range(0, max_tested_order+1):
         h_values = thickness_scheludko_at_order(lambdas_masked, intensities_masked, m, r_index_masked)
         
         if plot:
-            plt.plot(lambdas_masked, h_values,'.', markersize =3, label=f"Épaisseur du film (Scheludko, m={m})")
+            plt.plot(lambdas_masked, h_values,'.', markersize=3, label=f"Épaisseur du film (Scheludko, m={m})")
         ecart = np.max(h_values)-np.min(h_values)
     
         print(f"Écart pour m={m} : {ecart:.3f} nm")
@@ -213,14 +214,19 @@ def thickness_from_scheludko(lambdas,
 
 def thickness_for_order0(lambdas, 
                          smoothed_intensities,
-                         peaks_min, 
-                         peaks_max,
                          refractive_index, 
+                         min_peak_prominence,
                          plot=None):
     
     
     File_I_min = 'tests/spectre_trou/000043641.xy'
     r_index = refractive_index
+    
+    peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=min_peak_prominence,
+                                                     plot=False)
+    
+    
     
     
     lambdas_I_min, intensities_I_min = load_spectrum(File_I_min, lambda_min=450)

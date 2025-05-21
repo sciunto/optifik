@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 from optifik.analysis import *
 from optifik.auto import auto
+from optifik import io
 
 plt.rc('text', usetex=True)
 plt.rcParams.update({
@@ -23,6 +24,36 @@ plt.rcParams.update({
     'legend.fontsize': 23,
 })
 
+
+
+def play():
+    ##### Chemin du dossier contenant le spectre #####
+
+    DATA_FOLDER = os.path.abspath(os.path.join(os.path.curdir, 'tests', 'basic'))
+
+    #SAVE_FOLDER = DATA_FOLDER
+
+    # FILE_NAME = '003582.xy' #FFT Exemple -> FFT 3524.51
+    # FILE_NAME = '000004310.xy' #OOspectro Exemple -> minmax 1338.35
+    # FILE_NAME = '000005253.xy'#Scheludko 4 pics Exemple -> scheludko ²
+    # FILE_NAME = '000006544.xy'#Scheludko 2 pics Exemple -> ombre ## Diviser prominence FFT par 2
+    # FILE_NAME = '000018918.xy' #Scheludko 1 pic max Exemple -> ombre ## Diviser prominence FFT par 2
+
+    FILE_NAME = '000004310.xy' #TEST#
+    spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
+    lambdas, intensities = io.load_spectrum(spectrum_file)
+    plot_spectrum(lambdas, intensities, title='Raw')
+    
+    lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
+    plot_spectrum(lambdas, intensities, title='Raw, cropped')
+    
+    smoothed_intensities = smooth_intensities(intensities)
+    plot_spectrum(lambdas, smoothed_intensities, title='Smoothed')
+    
+    prominence = 0.02
+    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                     plot=True)
 
 
 def check_basic():
@@ -41,7 +72,8 @@ def check_basic():
 
     FILE_NAME = '000004310.xy' #TEST#
 
-    auto(DATA_FOLDER, FILE_NAME, plot=False)
+    spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
+    auto(spectrum_file, plot=False)
 
 
 def check_SV1():
@@ -80,8 +112,9 @@ def check_SV1():
 
         ##### Find Peak #####
 
-        total_extrema, smoothed_intensities, raw_intensities, lambdas, peaks_min, peaks_max = finds_peak(spectre_file,
-                                                                                                         min_peak_prominence=prominence)
+        total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                     plot=False)
         
         thickness_minmax = thickness_from_minmax(lambdas,
                                                  smoothed_intensities,
@@ -99,5 +132,6 @@ def check_SV1():
 
 if __name__ == '__main__':
 
-    check_basic()
-    check_SV1()
+    #check_basic()
+    #check_SV1()
+    play()

@@ -3,10 +3,10 @@ import os.path
 from .analysis import *
 from .io import load_spectrum
 
-def auto(DATA_FOLDER, FILE_NAME, plot=None):
+def auto(spectrum_file, plot=None):
 
 
-    spectre_file = os.path.join(DATA_FOLDER, FILE_NAME)
+    spectre_file = spectrum_file
 
     ##### Affichage du spectre brut et récupération des Intesités brutes#####
 
@@ -32,17 +32,20 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
     prominence = 0.03
     ##### Find Peak #####
 
-    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+    peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
                                                      min_peak_prominence=prominence,
-                                                      plot=plot)
+                                                     plot=False)
 
     ##### Epaisseur selon la methode #####
 
     #thickness_FFT = thickness_from_fft(lambdas,smoothed_intensities,refractive_index=1.33)
 
+
+    total_extrema = len(peaks_max) + len(peaks_min)
+
     if total_extrema > 15 and total_extrema > 4:
         print('Apply method FFT')
-        thickness_FFT = thickness_from_fft(lambdas,smoothed_intensities,
+        thickness_FFT = thickness_from_fft(lambdas, smoothed_intensities,
                                            refractive_index=indice,
                                            plot=plot)
         thickness = thickness_FFT.thickness
@@ -51,7 +54,7 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
 
     if total_extrema <= 15 and total_extrema > 4:
         print('Apply method minmax')
-        thickness_minmax = thickness_from_minmax(lambdas,smoothed_intensities,
+        thickness_minmax = thickness_from_minmax(lambdas, smoothed_intensities,
                                                  refractive_index=indice,
                                                  min_peak_prominence=prominence,
                                                  plot=plot)
@@ -61,8 +64,8 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
     if total_extrema <= 4 and total_extrema >= 2:  #& 2peak minimum:
         print('Apply method Scheludko')
         thickness = thickness_from_scheludko(lambdas, smoothed_intensities,
-                                             peaks_min, peaks_max,
                                              refractive_index=indice,
+                                             min_peak_prominence=prominence,
                                              plot=plot)
         print(f'thickness: {thickness:.2f} nm')
 
@@ -70,8 +73,8 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
         print('Apply method ordre0')
 
         thickness = thickness_for_order0(lambdas, smoothed_intensities,
-                                             peaks_min, peaks_max,
                                              refractive_index=indice,
+                                             min_peak_prominence=prominence,
                                              plot=plot)
 
         print(f'thickness: {thickness:.2f} nm')

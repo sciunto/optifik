@@ -15,13 +15,23 @@ plt.rcParams.update({
 
 from .io import load_spectrum
 from .fft import *
-from .scheludko import *
 from .minmax import *
 
 
 
 
 
+def plot_spectrum(lambdas, intensities, title=''):
+    
+    plt.figure(figsize=(10, 6),dpi =600)
+    plt.plot(lambdas, intensities, 'o-', markersize=2)
+    plt.xlabel(r'$\lambda$ (nm)')
+    plt.ylabel(r'$I^*$')
+    plt.title(title)
+    plt.tight_layout() 
+    plt.show()
+    
+    
 
 def plot_xy(file_path, plot=True):
     try:
@@ -62,40 +72,26 @@ def finds_peak(lambdas, intensities, min_peak_prominence, min_peak_distance=10, 
         Distance minimale entre les pics.
     """
  
-    smoothed_intensities =  intensities
- 
-    
- 
-    # Trouver les maxima et minima sur le signal lissé
-    peaks_max, _ = find_peaks(smoothed_intensities, prominence=min_peak_prominence, distance=min_peak_distance)
-    peaks_min, _ = find_peaks(-smoothed_intensities, prominence=min_peak_prominence, distance=min_peak_distance)
+
+    peaks_max, _ = find_peaks(intensities, prominence=min_peak_prominence, distance=min_peak_distance)
+    peaks_min, _ = find_peaks(-intensities, prominence=min_peak_prominence, distance=min_peak_distance)
     
     if plot:
         plt.figure(figsize=(10, 6),dpi =600)
-        plt.plot(lambdas, smoothed_intensities, 'o-', markersize=2, label="Smoothed data")
-        plt.plot(lambdas[peaks_max], smoothed_intensities[peaks_max], 'ro')
-        plt.plot(lambdas[peaks_min], smoothed_intensities[peaks_min], 'ro')
+        plt.plot(lambdas, intensities, 'o-', markersize=2, label="Smoothed data")
+        plt.plot(lambdas[peaks_max], intensities[peaks_max], 'ro')
+        plt.plot(lambdas[peaks_min], intensities[peaks_min], 'ro')
         plt.xlabel(r'$\lambda$ (nm)')
         plt.ylabel(r'$I^*$')
         plt.legend()
         plt.tight_layout() 
         plt.show()
 
-    # Nombre total d’extremums
-    total_extrema = len(peaks_max) + len(peaks_min)
-    if total_extrema >= 15:
-        print('Number of extrema', total_extrema,'.')
-        print('FFT method')
 
-    if total_extrema <= 15 and total_extrema > 4:
-        print('Number of extrema', total_extrema,'.')
-        print('OOSpectro method')
 
-    if total_extrema <= 4:
-        print('Number of extrema', total_extrema,'.')
-        print('Scheludko method')
 
-    return total_extrema, peaks_min, peaks_max
+
+    return peaks_min, peaks_max
 
 
 

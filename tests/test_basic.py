@@ -3,13 +3,12 @@ import numpy as np
 from numpy.testing import assert_allclose
 import pytest
 
-from optifik.analysis import thickness_from_fft
-from optifik.analysis import thickness_from_minmax
-from optifik.analysis import thickness_from_scheludko
-from optifik.analysis import thickness_for_order0
+from optifik.fft import thickness_from_fft
+from optifik.minmax import thickness_from_minmax
+from optifik.scheludko import thickness_from_scheludko
+from optifik.scheludko import thickness_for_order0
 from optifik.analysis import smooth_intensities
 from optifik.analysis import Prominence_from_fft
-from optifik.analysis import finds_peak
 from optifik.io import load_spectrum
 
 
@@ -69,14 +68,10 @@ def test_scheludko_4peaks():
 
     prominence = Prominence_from_fft(lambdas=lambdas, intensities=smoothed_intensities, refractive_index=indice, plot=False)
 
-    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
-                                                     min_peak_prominence=prominence,
-                                                     plot=False)
-
 
     result = thickness_from_scheludko(lambdas, smoothed_intensities,
-                                             peaks_min, peaks_max,
                                              refractive_index=indice,
+                                             min_peak_prominence=prominence,
                                              plot=False)
 
     assert_allclose(result.thickness, expected, rtol=1e-1)
@@ -95,13 +90,9 @@ def test_scheludko_2peaks():
 
     prominence = 0.03
 
-    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
-                                                     min_peak_prominence=prominence,
-                                                     plot=False)
-
     result = thickness_from_scheludko(lambdas, smoothed_intensities,
-                                             peaks_min, peaks_max,
                                              refractive_index=indice,
+                                             min_peak_prominence=prominence,
                                              plot=False)
 
     assert_allclose(result.thickness, expected, rtol=1e-1)
@@ -122,13 +113,10 @@ def test_order0():
 
     prominence = 0.03
 
-    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
-                                                     min_peak_prominence=prominence,
-                                                     plot=False)
 
     result = thickness_for_order0(lambdas, smoothed_intensities,
-                                             peaks_min, peaks_max,
                                              refractive_index=indice,
+                                             min_peak_prominence=prominence,
                                              plot=False)
 
     assert_allclose(result.thickness, expected, rtol=1e-1)

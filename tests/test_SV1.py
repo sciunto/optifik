@@ -29,10 +29,6 @@ def test_minmax(spectrum_path, expected):
     indice =  1.324188 + 3102.060378 / (lambdas**2)
     prominence = 0.02
 
-    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
-                                                     min_peak_prominence=prominence,
-                                                     plot=False)
-
     thickness_minmax = thickness_from_minmax(lambdas,
                                              smoothed_intensities,
                                              refractive_index=indice,
