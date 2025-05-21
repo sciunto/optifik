@@ -1,12 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 15 13:34:02 2025
 
-@author: ziapkoff
-"""
 
 import os
-
 import matplotlib.pyplot as plt
 
 

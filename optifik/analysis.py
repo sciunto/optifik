@@ -31,30 +31,6 @@ def plot_spectrum(lambdas, intensities, title=''):
     plt.tight_layout() 
     plt.show()
     
-    
-
-def plot_xy(file_path, plot=True):
-    try:
-        # Lecture du fichier .xy en utilisant pandas
-        data = pd.read_csv(file_path, delimiter=',', header=None, names=["x", "y"])
-
-        # Extraction des colonnes
-        x = data["x"]
-        y = data["y"]
-
-        # Tracer la deuxième colonne en fonction de la première
-        plt.figure(figsize=(10, 6),dpi = 600)
-        plt.plot(x, y, 'o-', markersize=2, label="Raw data")
-
-        # Ajout des labels et du titre
-        plt.xlabel(r'$\lambda$ (nm)')
-        plt.ylabel(r'$I^*$')
-        plt.legend()
-
-    except FileNotFoundError:
-        print(f"Erreur : le fichier '{file_path}' est introuvable.")
-    except Exception as e:
-        print(f"Une erreur est survenue : {e}")
 
 
 
@@ -86,9 +62,6 @@ def finds_peak(lambdas, intensities, min_peak_prominence, min_peak_distance=10, 
         plt.legend()
         plt.tight_layout() 
         plt.show()
-
-
-
 
 
     return peaks_min, peaks_max
