@@ -7,8 +7,7 @@ from optifik.analysis import thickness_from_fft
 from optifik.analysis import thickness_from_minmax
 from optifik.analysis import thickness_from_scheludko
 from optifik.analysis import thickness_for_order0
-from optifik.analysis import plot_xy
-from optifik.analysis import Data_Smoothed
+from optifik.analysis import smooth_intensities
 from optifik.analysis import Prominence_from_fft
 from optifik.analysis import finds_peak
 from optifik.io import load_spectrum
@@ -20,8 +19,8 @@ def test_FFT():
     expected = 3524.51
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    raw_intensities = load_spectrum(spectrum_path)
-    smoothed_intensities, intensities, lambdas = Data_Smoothed(spectrum_path)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
     thickness_FFT = thickness_from_fft(lambdas,
@@ -37,8 +36,8 @@ def test_minmax_ransac():
     expected = 1338.35
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    raw_intensities = load_spectrum(spectrum_path)
-    smoothed_intensities, intensities, lambdas = Data_Smoothed(spectrum_path)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
     prominence = Prominence_from_fft(lambdas=lambdas,
@@ -64,14 +63,15 @@ def test_scheludko_4peaks():
     expected = 777.07
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    raw_intensities = load_spectrum(spectrum_path)
-    smoothed_intensities, intensities, lambdas = Data_Smoothed(spectrum_path)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
     prominence = Prominence_from_fft(lambdas=lambdas, intensities=smoothed_intensities, refractive_index=indice, plot=False)
 
-    total_extrema, smoothed_intensities, raw_intensities, lambdas, peaks_min, peaks_max = finds_peak(spectrum_path,
-                                                                                                     min_peak_prominence=prominence)
+    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                     plot=False)
 
 
     result = thickness_from_scheludko(lambdas, smoothed_intensities,
@@ -89,15 +89,15 @@ def test_scheludko_2peaks():
     expected = 495.69
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    raw_intensities = load_spectrum(spectrum_path)
-    smoothed_intensities, intensities, lambdas = Data_Smoothed(spectrum_path)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
     prominence = 0.03
 
-    total_extrema, smoothed_intensities, raw_intensities, lambdas, peaks_min, peaks_max = finds_peak(spectrum_path,
-                                                                                                     min_peak_prominence=prominence)
-
+    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                     plot=False)
 
     result = thickness_from_scheludko(lambdas, smoothed_intensities,
                                              peaks_min, peaks_max,
@@ -116,15 +116,15 @@ def test_order0():
     expected = 115.33
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    raw_intensities = load_spectrum(spectrum_path)
-    smoothed_intensities, intensities, lambdas = Data_Smoothed(spectrum_path)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
     prominence = 0.03
 
-    total_extrema, smoothed_intensities, raw_intensities, lambdas, peaks_min, peaks_max = finds_peak(spectrum_path,
-                                                                                                     min_peak_prominence=prominence)
-
+    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                     plot=False)
 
     result = thickness_for_order0(lambdas, smoothed_intensities,
                                              peaks_min, peaks_max,

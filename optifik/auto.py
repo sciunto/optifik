@@ -10,11 +10,13 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
 
     ##### Affichage du spectre brut et récupération des Intesités brutes#####
 
-    raw_intensities = load_spectrum(spectre_file)
+    lambdas, raw_intensities = load_spectrum(spectre_file, lambda_min=450)
 
     ##### Affichage du spectre lissé #####
 
-    smoothed_intensities, intensities, lambdas = Data_Smoothed(spectre_file)
+    #smoothed_intensities, intensities, lambdas = Data_Smoothed(spectre_file)
+
+    smoothed_intensities = smooth_intensities(raw_intensities)
 
     ##### Indice Optique en fonction de Lambda #####
 
@@ -30,9 +32,9 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
     prominence = 0.03
     ##### Find Peak #####
 
-    total_extrema, smoothed_intensities, raw_intensities, lambdas, peaks_min, peaks_max = finds_peak(spectre_file,
-                                                                                                     min_peak_prominence=prominence,
-                                                                                                     plot=plot)
+    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                      plot=plot)
 
     ##### Epaisseur selon la methode #####
 

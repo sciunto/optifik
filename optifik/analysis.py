@@ -48,14 +48,7 @@ def plot_xy(file_path, plot=True):
 
 
 
-
-
-
-
-
-
-
-def finds_peak(filename, min_peak_prominence, min_peak_distance=10, plot=None):
+def finds_peak(lambdas, intensities, min_peak_prominence, min_peak_distance=10, plot=None):
     """
     Charge un fichier .xy et affiche les données avec les extrema détectés (minima et maxima).
 
@@ -68,10 +61,11 @@ def finds_peak(filename, min_peak_prominence, min_peak_distance=10, plot=None):
     min_peak_distance : float
         Distance minimale entre les pics.
     """
-    # Charger et lisser les données
-    lambdas, intensities = load_spectrum(filename, lambda_min=450)
-    WIN_SIZE = 11
-    smoothed_intensities = savgol_filter(intensities, WIN_SIZE, 3)
+ 
+    smoothed_intensities =  intensities
+ 
+    
+ 
     # Trouver les maxima et minima sur le signal lissé
     peaks_max, _ = find_peaks(smoothed_intensities, prominence=min_peak_prominence, distance=min_peak_distance)
     peaks_min, _ = find_peaks(-smoothed_intensities, prominence=min_peak_prominence, distance=min_peak_distance)
@@ -84,50 +78,29 @@ def finds_peak(filename, min_peak_prominence, min_peak_distance=10, plot=None):
         plt.xlabel(r'$\lambda$ (nm)')
         plt.ylabel(r'$I^*$')
         plt.legend()
-        plt.tight_layout()
+        plt.tight_layout() 
         plt.show()
 
     # Nombre total d’extremums
     total_extrema = len(peaks_max) + len(peaks_min)
-    if total_extrema >=15:
+    if total_extrema >= 15:
         print('Number of extrema', total_extrema,'.')
         print('FFT method')
 
-    if total_extrema <=15 and total_extrema >4:
+    if total_extrema <= 15 and total_extrema > 4:
         print('Number of extrema', total_extrema,'.')
         print('OOSpectro method')
 
-    if total_extrema <=4:
+    if total_extrema <= 4:
         print('Number of extrema', total_extrema,'.')
         print('Scheludko method')
 
-    return total_extrema, smoothed_intensities, intensities, lambdas, peaks_min, peaks_max
+    return total_extrema, peaks_min, peaks_max
 
 
 
-
-
-def Data_Smoothed(filename):
-    """
-    Charge un fichier .xy et affiche les données avec les extrema détectés (minima et maxima).
-
-    Parameters
-    ----------
-    filename : str
-        Chemin vers le fichier .xy (2 colonnes : lambda et intensité).
-    min_peak_prominence : float
-        Importance minimale des pics.
-    min_peak_distance : float
-        Distance minimale entre les pics.
-    """
-    # Charger et lisser les données
-    lambdas, intensities = load_spectrum(filename, lambda_min=450)
+def smooth_intensities(intensities):
     WIN_SIZE = 11
     smoothed_intensities = savgol_filter(intensities, WIN_SIZE, 3)
-
-    return smoothed_intensities, intensities, lambdas
-
-
-
-    
+    return smoothed_intensities
 

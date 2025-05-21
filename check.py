@@ -61,13 +61,16 @@ def check_SV1():
         
         spectre_file = os.path.join(DATA_FOLDER, fn)
 
-        ##### Affichage du spectre brut et récupération des Intesités brutes#####
-
-        raw_intensities = plot_xy(spectre_file)
-
+        lambdas, raw_intensities = load_spectrum(spectre_file, lambda_min=450)
+        
         ##### Affichage du spectre lissé #####
+        
+        #smoothed_intensities, intensities, lambdas = Data_Smoothed(spectre_file)
+        
+        smoothed_intensities = smooth_intensities(raw_intensities)
 
-        smoothed_intensities, intensities, lambdas = Data_Smoothed(spectre_file)
+
+#        smoothed_intensities, intensities, lambdas = Data_Smoothed(spectre_file)
 
         ##### Indice Optique en fonction de Lambda #####
 
@@ -97,4 +100,4 @@ def check_SV1():
 if __name__ == '__main__':
 
     check_basic()
-    #check_SV1()
+    check_SV1()

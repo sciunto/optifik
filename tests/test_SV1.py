@@ -4,9 +4,9 @@ from numpy.testing import assert_allclose
 import pytest
 
 from optifik.minmax import thickness_from_minmax
-from optifik.analysis import Data_Smoothed
-from optifik.analysis import finds_peak
 from optifik.io import load_spectrum
+from optifik.analysis import smooth_intensities
+from optifik.analysis import finds_peak
 
 import yaml
 
@@ -21,17 +21,17 @@ def load():
     return data
 
 
-@pytest.mark.parametrize("spectrum, expected", load())
-def test_minmax(spectrum, expected):
-    raw_intensities = load_spectrum(spectrum)
-
-    smoothed_intensities, intensities, lambdas = Data_Smoothed(spectrum)
+@pytest.mark.parametrize("spectrum_path, expected", load())
+def test_minmax(spectrum_path, expected):
+    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    smoothed_intensities = smooth_intensities(raw_intensities)
 
     indice =  1.324188 + 3102.060378 / (lambdas**2)
     prominence = 0.02
 
-    total_extrema, smoothed_intensities, raw_intensities, lambdas, peaks_min, peaks_max = finds_peak(spectrum,
-                                                                                                     min_peak_prominence=prominence)
+    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                     plot=False)
 
     thickness_minmax = thickness_from_minmax(lambdas,
                                              smoothed_intensities,
