@@ -51,7 +51,7 @@ def play():
     plot_spectrum(lambdas, smoothed_intensities, title='Smoothed')
     
     prominence = 0.02
-    total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+    peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
                                                      min_peak_prominence=prominence,
                                                      plot=True)
 
@@ -112,16 +112,15 @@ def check_SV1():
 
         ##### Find Peak #####
 
-        total_extrema, peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+        peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
                                                      min_peak_prominence=prominence,
                                                      plot=False)
         
-        thickness_minmax = thickness_from_minmax(lambdas,
+        result = thickness_from_minmax(lambdas,
                                                  smoothed_intensities,
                                                  refractive_index=indice,
                                                  min_peak_prominence=prominence)
-        thickness = thickness_minmax.thickness
-        print(f'thickness: {thickness:.2f} nm')
+        print(f'thickness: {result.thickness:.2f} nm')
         
         
         print(f'expected: {val}')
@@ -132,6 +131,6 @@ def check_SV1():
 
 if __name__ == '__main__':
 
-    #check_basic()
-    #check_SV1()
+    check_basic()
+    check_SV1()
     play()

@@ -45,39 +45,40 @@ def auto(spectrum_file, plot=None):
 
     if total_extrema > 15 and total_extrema > 4:
         print('Apply method FFT')
-        thickness_FFT = thickness_from_fft(lambdas, smoothed_intensities,
+        result = thickness_from_fft(lambdas, smoothed_intensities,
                                            refractive_index=indice,
                                            plot=plot)
-        thickness = thickness_FFT.thickness
-        print(f'thickness: {thickness:.2f} nm')
+        
+        print(f'thickness: {result.thickness:.2f} nm')
 
 
     if total_extrema <= 15 and total_extrema > 4:
         print('Apply method minmax')
-        thickness_minmax = thickness_from_minmax(lambdas, smoothed_intensities,
+        result = thickness_from_minmax(lambdas, smoothed_intensities,
                                                  refractive_index=indice,
                                                  min_peak_prominence=prominence,
                                                  plot=plot)
-        thickness = thickness_minmax.thickness
-        print(f'thickness: {thickness:.2f} nm')
+        
+        print(f'thickness: {result.thickness:.2f} nm')
 
     if total_extrema <= 4 and total_extrema >= 2:  #& 2peak minimum:
         print('Apply method Scheludko')
-        thickness = thickness_from_scheludko(lambdas, smoothed_intensities,
+        result = thickness_from_scheludko(lambdas, smoothed_intensities,
                                              refractive_index=indice,
                                              min_peak_prominence=prominence,
                                              plot=plot)
-        print(f'thickness: {thickness:.2f} nm')
+        
+        print(f'thickness: {result.thickness:.2f} nm')
 
     if total_extrema <= 4 and len(peaks_max) == 1 and len(peaks_min) == 0 : #dans l'ordre zéro !
         print('Apply method ordre0')
 
-        thickness = thickness_for_order0(lambdas, smoothed_intensities,
+        result = thickness_for_order0(lambdas, smoothed_intensities,
                                              refractive_index=indice,
                                              min_peak_prominence=prominence,
                                              plot=plot)
 
-        print(f'thickness: {thickness:.2f} nm')
+        print(f'thickness: {result.thickness:.2f} nm')
 
     if total_extrema <= 4 and len(peaks_max) == 0 and (len(peaks_min) == 1 or  len(peaks_min) == 0):
         #& 1peak min ou zéro:
