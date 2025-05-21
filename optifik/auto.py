@@ -58,7 +58,7 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
 
     if total_extrema <= 4 and total_extrema >= 2:  #& 2peak minimum:
         print('Apply method Scheludko')
-        thickness = thickness_from_scheludko(lambdas, raw_intensities, smoothed_intensities,
+        thickness = thickness_from_scheludko(lambdas, smoothed_intensities,
                                              peaks_min, peaks_max,
                                              refractive_index=indice,
                                              plot=plot)
@@ -67,7 +67,7 @@ def auto(DATA_FOLDER, FILE_NAME, plot=None):
     if total_extrema <= 4 and len(peaks_max) == 1 and len(peaks_min) == 0 : #dans l'ordre zéro !
         print('Apply method ordre0')
 
-        thickness = thickness_for_order0(lambdas, raw_intensities, smoothed_intensities,
+        thickness = thickness_for_order0(lambdas, smoothed_intensities,
                                              peaks_min, peaks_max,
                                              refractive_index=indice,
                                              plot=plot)

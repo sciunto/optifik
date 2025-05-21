@@ -34,7 +34,6 @@ def test_minmax(spectrum, expected):
                                                                                                      min_peak_prominence=prominence)
 
     thickness_scheludko = thickness_from_scheludko(lambdas,
-                             raw_intensities,
                              smoothed_intensities,
                              peaks_min,
                              peaks_max,

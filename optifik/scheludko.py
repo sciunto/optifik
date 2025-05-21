@@ -113,7 +113,6 @@ def Delta_fit(xdata, thickness, interference_order):
 
 
 def thickness_from_scheludko(lambdas, 
-                             raw_intensities, 
                              smoothed_intensities,
                              peaks_min, 
                              peaks_max,
@@ -161,7 +160,6 @@ def thickness_from_scheludko(lambdas,
     lambdas_masked = lambdas[mask]
     r_index_masked = r_index[mask]
     intensities_masked = smoothed_intensities[mask]
-    intensities_raw_masked = raw_intensities[mask]
     min_ecart = np.inf
     best_m = None
     meilleure_h = None
@@ -214,7 +212,6 @@ def thickness_from_scheludko(lambdas,
 
 
 def thickness_for_order0(lambdas, 
-                         raw_intensities, 
                          smoothed_intensities,
                          peaks_min, 
                          peaks_max,
@@ -236,7 +233,6 @@ def thickness_for_order0(lambdas,
     lambdas_masked = lambdas[mask]
     r_index_masked = r_index[mask]
     intensities_masked = smoothed_intensities[mask]
-    intensities_raw_masked = raw_intensities[mask]
     intensities_I_min_masked =intensities_I_min[mask]
 
     min_ecart = np.inf

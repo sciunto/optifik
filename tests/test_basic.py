@@ -74,7 +74,7 @@ def test_scheludko_4peaks():
                                                                                                      min_peak_prominence=prominence)
 
 
-    result = thickness_from_scheludko(lambdas, raw_intensities, smoothed_intensities,
+    result = thickness_from_scheludko(lambdas, smoothed_intensities,
                                              peaks_min, peaks_max,
                                              refractive_index=indice,
                                              plot=False)
@@ -99,7 +99,7 @@ def test_scheludko_2peaks():
                                                                                                      min_peak_prominence=prominence)
 
 
-    result = thickness_from_scheludko(lambdas, raw_intensities, smoothed_intensities,
+    result = thickness_from_scheludko(lambdas, smoothed_intensities,
                                              peaks_min, peaks_max,
                                              refractive_index=indice,
                                              plot=False)
@@ -126,7 +126,7 @@ def test_order0():
                                                                                                      min_peak_prominence=prominence)
 
 
-    result = thickness_for_order0(lambdas, raw_intensities, smoothed_intensities,
+    result = thickness_for_order0(lambdas, smoothed_intensities,
                                              peaks_min, peaks_max,
                                              refractive_index=indice,
                                              plot=False)
