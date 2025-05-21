@@ -1,0 +1,30 @@
+[project]
+name = "optifik"
+version = "0.1.0"
+description = "Projet scientifique pour des optimisations numériques"
+authors = [
+  { name = "François Boulogne", email = "francois.boulogne@cnrs.fr" }
+]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "numpy",
+  "scipy",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov"
+]
+
+[tool.pytest.ini_options]
+addopts = "-v --tb=short --disable-warnings"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
