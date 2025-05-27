@@ -24,10 +24,10 @@ def auto(spectrum_file, plot=None):
 
     ##### Determination de la prominence associé #####
 
-    prominence = Prominence_from_fft(lambdas=lambdas, 
-                                     intensities=smoothed_intensities, 
-                                     refractive_index=indice,
-                                     plot=plot)
+    prominence, signal, wavelength = Prominence_from_fft(lambdas,
+                                                        smoothed_intensities,
+                                                        refractive_index=indice,
+                                                        plot=plot)
 
     prominence = 0.03
     ##### Find Peak #####
@@ -48,7 +48,7 @@ def auto(spectrum_file, plot=None):
         result = thickness_from_fft(lambdas, smoothed_intensities,
                                            refractive_index=indice,
                                            plot=plot)
-        
+
         print(f'thickness: {result.thickness:.2f} nm')
 
 
@@ -58,7 +58,7 @@ def auto(spectrum_file, plot=None):
                                                  refractive_index=indice,
                                                  min_peak_prominence=prominence,
                                                  plot=plot)
-        
+
         print(f'thickness: {result.thickness:.2f} nm')
 
     if total_extrema <= 4 and total_extrema >= 2:  #& 2peak minimum:
@@ -67,7 +67,7 @@ def auto(spectrum_file, plot=None):
                                              refractive_index=indice,
                                              min_peak_prominence=prominence,
                                              plot=plot)
-        
+
         print(f'thickness: {result.thickness:.2f} nm')
 
     if total_extrema <= 4 and len(peaks_max) == 1 and len(peaks_min) == 0 : #dans l'ordre zéro !

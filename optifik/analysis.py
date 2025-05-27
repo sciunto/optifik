@@ -1,6 +1,3 @@
-
-import pandas as pd
-
 from scipy.signal import savgol_filter
 from scipy.signal import find_peaks
 
@@ -13,54 +10,56 @@ plt.rcParams.update({
     'legend.fontsize': 23,
 })
 
-from .io import load_spectrum
-from .fft import *
-from .minmax import *
 
 
+def plot_spectrum(wavelengths, intensities, title=''):
 
-
-
-def plot_spectrum(lambdas, intensities, title=''):
-    
-    plt.figure(figsize=(10, 6),dpi =600)
-    plt.plot(lambdas, intensities, 'o-', markersize=2)
+    plt.figure(figsize=(10, 6), dpi=300)
+    plt.plot(wavelengths, intensities, 'o-', markersize=2)
     plt.xlabel(r'$\lambda$ (nm)')
     plt.ylabel(r'$I^*$')
     plt.title(title)
-    plt.tight_layout() 
+    plt.tight_layout()
     plt.show()
-    
 
 
 
-def finds_peak(lambdas, intensities, min_peak_prominence, min_peak_distance=10, plot=None):
+def finds_peak(wavelengths, intensities, min_peak_prominence, min_peak_distance=10, plot=None):
     """
-    Charge un fichier .xy et affiche les données avec les extrema détectés (minima et maxima).
+    Detect minima and maxima
 
     Parameters
     ----------
-    filename : str
-        Chemin vers le fichier .xy (2 colonnes : lambda et intensité).
+    wavelengths : array
+        Wavelength values in nm.
+    intensities : array
+        Intensity values.
     min_peak_prominence : float
-        Importance minimale des pics.
-    min_peak_distance : float
-        Distance minimale entre les pics.
+        min prominence for scipy find_peak.
+    min_peak_distance : int, optional
+        min peak distance for scipy find_peak. The default is 10.
+    plot : bool, optional
+        Display a curve, useful for checking or debuging. The default is None.
+
+    Returns
+    -------
+    (peaks_min, peaks_max)
+
     """
- 
+
 
     peaks_max, _ = find_peaks(intensities, prominence=min_peak_prominence, distance=min_peak_distance)
     peaks_min, _ = find_peaks(-intensities, prominence=min_peak_prominence, distance=min_peak_distance)
-    
+
     if plot:
-        plt.figure(figsize=(10, 6),dpi =600)
-        plt.plot(lambdas, intensities, 'o-', markersize=2, label="Smoothed data")
-        plt.plot(lambdas[peaks_max], intensities[peaks_max], 'ro')
-        plt.plot(lambdas[peaks_min], intensities[peaks_min], 'ro')
+        plt.figure(figsize=(10, 6), dpi=300)
+        plt.plot(wavelengths, intensities, 'o-', markersize=2, label="Smoothed data")
+        plt.plot(wavelengths[peaks_max], intensities[peaks_max], 'ro')
+        plt.plot(wavelengths[peaks_min], intensities[peaks_min], 'ro')
         plt.xlabel(r'$\lambda$ (nm)')
         plt.ylabel(r'$I^*$')
         plt.legend()
-        plt.tight_layout() 
+        plt.tight_layout()
         plt.show()
 
 
@@ -68,8 +67,23 @@ def finds_peak(lambdas, intensities, min_peak_prominence, min_peak_distance=10, 
 
 
 
-def smooth_intensities(intensities):
-    WIN_SIZE = 11
-    smoothed_intensities = savgol_filter(intensities, WIN_SIZE, 3)
+def smooth_intensities(intensities, window_size=11):
+    """
+    Return a smoothed intensities array with a Savitzky-Golay filter.
+
+    Parameters
+    ----------
+    intensities : ndarray
+        Intensity values
+    window_size : int, optional
+        The length of the filter window. The default is 11.
+
+    Returns
+    -------
+    smoothed_intensities
+
+    """
+    polynom_order = 3
+    smoothed_intensities = savgol_filter(intensities, window_size, 3)
     return smoothed_intensities
 

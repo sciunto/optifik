@@ -8,7 +8,7 @@ from optifik.minmax import thickness_from_minmax
 from optifik.scheludko import thickness_from_scheludko
 from optifik.scheludko import thickness_for_order0
 from optifik.analysis import smooth_intensities
-from optifik.analysis import Prominence_from_fft
+from optifik.fft import Prominence_from_fft
 from optifik.io import load_spectrum
 
 
@@ -39,10 +39,10 @@ def test_minmax_ransac():
     smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
-    prominence = Prominence_from_fft(lambdas=lambdas,
-                                     intensities=smoothed_intensities,
-                                     refractive_index=indice,
-                                     plot=False)
+    prominence, signal, wavelength = Prominence_from_fft(lambdas,
+                                                          smoothed_intensities,
+                                                          refractive_index=indice,
+                                                          plot=False)
 
 
     thickness_minmax = thickness_from_minmax(lambdas,
@@ -66,7 +66,10 @@ def test_scheludko_4peaks():
     smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
-    prominence = Prominence_from_fft(lambdas=lambdas, intensities=smoothed_intensities, refractive_index=indice, plot=False)
+    prominence, signal, wavelength  = Prominence_from_fft(lambdas,
+                                                          smoothed_intensities,
+                                                          refractive_index=indice,
+                                                          plot=False)
 
 
     result = thickness_from_scheludko(lambdas, smoothed_intensities,

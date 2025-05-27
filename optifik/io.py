@@ -1,7 +1,9 @@
 import numpy as np
 
 
-def load_spectrum(spectrum_path, lambda_min=0, lambda_max=np.inf,
+def load_spectrum(spectrum_path,
+                  lambda_min=0,
+                  lambda_max=np.inf,
                   delimiter=','):
     """
     Load a spectrum file.

@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 
 from optifik.analysis import *
+from optifik.fft import Prominence_from_fft
 from optifik.auto import auto
 from optifik import io
 
@@ -35,20 +36,31 @@ def play():
 
     FILE_NAME = '000004310.xy' #TEST#
     spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
+    
+    
+    spectrum_file = 'tests/spectraVictor1/T5469.xy' #TEST#
+    
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
-    
+
     lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
     plot_spectrum(lambdas, intensities, title='Raw, cropped')
-    
+
     smoothed_intensities = smooth_intensities(intensities)
     plot_spectrum(lambdas, smoothed_intensities, title='Smoothed')
-    
+
     prominence = 0.02
     peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
                                                      min_peak_prominence=prominence,
                                                      plot=True)
 
+    indice =  1.324188 + 3102.060378 / (lambdas**2)
+    p, s, w = Prominence_from_fft(lambdas, smoothed_intensities, indice, plot=True)
+
+    print(p)
+    peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=p,
+                                                     plot=True)
 
 def check_basic():
 
@@ -71,28 +83,28 @@ def check_basic():
 
 
 def check_SV1():
-    
-    
+
+
     DATA_FOLDER = os.path.join('tests', 'spectraVictor1')
-    
+
     import yaml
 
     yaml_file = os.path.join(DATA_FOLDER, 'known_value.yaml')
     with open(yaml_file, "r") as yaml_file:
         thickness_dict = yaml.safe_load(yaml_file)
-    
-    
+
+
     for fn, val in thickness_dict.items():
         #auto(DATA_FOLDER, fn)
-        
+
         spectre_file = os.path.join(DATA_FOLDER, fn)
 
         lambdas, raw_intensities = load_spectrum(spectre_file, lambda_min=450)
-        
+
         ##### Affichage du spectre lissé #####
-        
+
         #smoothed_intensities, intensities, lambdas = Data_Smoothed(spectre_file)
-        
+
         smoothed_intensities = smooth_intensities(raw_intensities)
 
 
@@ -109,22 +121,22 @@ def check_SV1():
         peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
                                                      min_peak_prominence=prominence,
                                                      plot=False)
-        
+
         result = thickness_from_minmax(lambdas,
                                                  smoothed_intensities,
                                                  refractive_index=indice,
                                                  min_peak_prominence=prominence)
         print(f'thickness: {result.thickness:.2f} nm')
-        
-        
+
+
         print(f'expected: {val}')
         print('#-' * 10)
 
 
-    
+
 
 if __name__ == '__main__':
 
-    check_basic()
-    check_SV1()
+    #check_basic()
+    #check_SV1()
     play()

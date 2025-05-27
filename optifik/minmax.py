@@ -15,21 +15,21 @@ plt.rcParams.update({
 
 from .utils import OptimizeResult
 
-    
-def thickness_from_minmax(lambdas, 
-                          intensities, 
+
+def thickness_from_minmax(wavelengths,
+                          intensities,
                           refractive_index,
-                          min_peak_prominence, 
+                          min_peak_prominence,
                           min_peak_distance=10,
-                          method='linreg', 
+                          method='linreg',
                           plot=None):
-    
-    """ 
+
+    """
     Return the thickness from a min-max detection.
-    
+
     Parameters
     ----------
-    lambdas : array
+    wavelengths : array
         Wavelength values in nm.
     intensities : array
         Intensity values.
@@ -44,12 +44,12 @@ def thickness_from_minmax(lambdas,
         for Randon Sampling Consensus.
     debug : boolean, optional
         Show plots of peak detection and lin regression.
-    
+
     Returns
     -------
     results : Instance of `OptimizeResult` class.
         The attribute `thickness` gives the thickness value in nm.
-    
+
     Notes
     -----
     For more details about `min_peak_prominence` and `min_peak_distance`,
@@ -63,11 +63,12 @@ def thickness_from_minmax(lambdas,
     peaks.sort()
 
     k_values = np.arange(len(peaks))
-    n_over_lambda = refractive_index[peaks][::-1] / lambdas[peaks][::-1]
+    n_over_lambda = refractive_index[peaks][::-1] / wavelengths[peaks][::-1]
 
     if k_values.size < 2:
         # Can't fit if less than two points.
-        return np.nan
+        return OptimizeResult(thickness=np.nan)
+
 
     if isinstance(refractive_index, np.ndarray):
         refractive_index = refractive_index[peaks][::-1]
@@ -77,7 +78,7 @@ def thickness_from_minmax(lambdas,
         min_samples = 2
         # Scikit-image
         data = np.column_stack([k_values, n_over_lambda])
-        model_robust, inliers = ransac(data, LineModelND, 
+        model_robust, inliers = ransac(data, LineModelND,
                                        min_samples=min_samples,
                                        residual_threshold=residual_threshold,
                                        max_trials=100)
@@ -85,7 +86,7 @@ def thickness_from_minmax(lambdas,
         thickness_minmax = 1 / slope /  4
 
         # Scikit-learn
-        #X, y = k_values.reshape(-1, 1), 1/lambdas[peaks][::-1]
+        #X, y = k_values.reshape(-1, 1), 1/wavelengths[peaks][::-1]
 
         ## Fit line using all data
         #lr = linear_model.LinearRegression()
