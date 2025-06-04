@@ -26,7 +26,7 @@ def plot_spectrum(wavelengths, intensities, title=''):
 
 def finds_peak(wavelengths, intensities, min_peak_prominence, min_peak_distance=10, plot=None):
     """
-    Detect minima and maxima
+    Detect minima and maxima.
 
     Parameters
     ----------

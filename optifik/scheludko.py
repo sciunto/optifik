@@ -29,10 +29,10 @@ def thickness_scheludko_at_order(wavelengths,
         Wavelength values in nm.
     intensities : array
         Intensity values.
-    interference_order: TYPE
-        DESCRIPTION.
-    refractive_index : TYPE
-        DESCRIPTION.
+    interference_order : int
+        Interference order.
+    refractive_index : array_like (or float)
+        Refractive index.
     Imin : TYPE, optional
         DESCRIPTION. The default is None.
 
@@ -203,7 +203,7 @@ def thickness_from_scheludko(wavelengths,
             min_ecart = ecart
             best_m = m
             best_h = h_values
-            
+
         if plot:
             plt.plot(wavelengths_masked, h_values,'.', markersize=3, label=f"Épaisseur du film (Scheludko, m={m})")
 
@@ -216,9 +216,9 @@ def thickness_from_scheludko(wavelengths,
     # DeltaVrai = (intensities_masked -np.min(intensities_masked))/(np.max(intensities_masked) -np.min(intensities_masked))
     # DeltaVrai = (intensities_raw_masked -np.min(intensities_raw_masked))/(np.max(intensities_raw_masked) -np.min(intensities_raw_masked))
 
-    DeltaScheludko = Delta(wavelengths_masked, 
-                           np.mean(best_h), 
-                           best_m, 
+    DeltaScheludko = Delta(wavelengths_masked,
+                           np.mean(best_h),
+                           best_m,
                            r_index_masked)
 
 
@@ -228,7 +228,7 @@ def thickness_from_scheludko(wavelengths,
 
     if plot:
         Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
-        
+
         plt.figure(figsize=(10, 6), dpi=300)
         plt.plot(wavelengths_masked, DeltaVrai,
                  'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
@@ -240,7 +240,7 @@ def thickness_from_scheludko(wavelengths,
         plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
 
 
-    return OptimizeResult(thickness=fitted_h ,)
+    return OptimizeResult(thickness=fitted_h,)
 
 
 def thickness_for_order0(wavelengths,
@@ -249,11 +249,11 @@ def thickness_for_order0(wavelengths,
                          min_peak_prominence,
                          plot=None):
 
-    # TODO : 
+    # TODO :
     # Load "trou"
     File_I_min = 'tests/spectre_trou/000043641.xy'
     wavelengths_I_min, intensities_I_min = load_spectrum(File_I_min, lambda_min=450)
-    
+
     r_index = refractive_index
 
     peaks_min, peaks_max = finds_peak(wavelengths, intensities,
@@ -287,7 +287,7 @@ def thickness_for_order0(wavelengths,
         plt.figure(figsize=(10, 6), dpi=300)
         plt.plot(wavelengths_masked, h_values, label=r"Épaisseur du film (Scheludko, m=0)")
 
-    
+
     best_m = m
     best_h = h_values
 
@@ -311,8 +311,8 @@ def thickness_for_order0(wavelengths,
 
     if plot:
         Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
-        plt.plot(wavelengths_masked, Delta_values, 
-                 'go-', markersize=2, 
+        plt.plot(wavelengths_masked, Delta_values,
+                 'go-', markersize=2,
                  label=rf'$\mathrm{{Fit}}\ (h = {fitted_h:.1f}\pm {np.sqrt(pcov[0][0]):.1f} \ \mathrm{{nm}})$')
         plt.legend()
         plt.ylabel(r'$\Delta$')

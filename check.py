@@ -36,10 +36,10 @@ def play():
 
     FILE_NAME = '000004310.xy' #TEST#
     spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
-    
-    
+
+
     spectrum_file = 'tests/spectraVictor1/T5469.xy' #TEST#
-    
+
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
 
