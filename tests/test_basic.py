@@ -8,7 +8,6 @@ from optifik.minmax import thickness_from_minmax
 from optifik.scheludko import thickness_from_scheludko
 from optifik.scheludko import thickness_for_order0
 from optifik.analysis import smooth_intensities
-from optifik.fft import Prominence_from_fft
 from optifik.io import load_spectrum
 
 
@@ -39,21 +38,16 @@ def test_minmax_ransac():
     smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
-    prominence, signal, wavelength = Prominence_from_fft(lambdas,
-                                                          smoothed_intensities,
-                                                          refractive_index=indice,
-                                                          plot=False)
+    prominence = 0.02
 
+    result = thickness_from_minmax(lambdas,
+                                   smoothed_intensities,
+                                   refractive_index=indice,
+                                   min_peak_prominence=prominence,
+                                   method='ransac',
+                                   plot=False)
 
-    thickness_minmax = thickness_from_minmax(lambdas,
-                                             smoothed_intensities,
-                                             refractive_index=indice,
-                                             min_peak_prominence=prominence,
-                                             method='ransac',
-                                             plot=False)
-    result = thickness_minmax.thickness
-
-    assert_allclose(result, expected, rtol=1e-1)
+    assert_allclose(result.thickness, expected, rtol=1e-1)
 
 
 def test_scheludko_4peaks():
@@ -66,11 +60,7 @@ def test_scheludko_4peaks():
     smoothed_intensities = smooth_intensities(raw_intensities)
     indice =  1.324188 + 3102.060378 / (lambdas**2)
 
-    prominence, signal, wavelength  = Prominence_from_fft(lambdas,
-                                                          smoothed_intensities,
-                                                          refractive_index=indice,
-                                                          plot=False)
-
+    prominence = 0.02
 
     result = thickness_from_scheludko(lambdas, smoothed_intensities,
                                              refractive_index=indice,

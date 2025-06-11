@@ -7,7 +7,6 @@ from optifik.minmax import thickness_from_minmax
 from optifik.io import load_spectrum
 from optifik.analysis import smooth_intensities
 from optifik.analysis import finds_peak
-from optifik.fft import Prominence_from_fft
 
 import yaml
 
@@ -32,21 +31,10 @@ def test_minmax(spectrum_path, expected):
     indice =  1.324188 + 3102.060378 / (lambdas**2)
     prominence = 0.02
 
-    #prominence, s, w = Prominence_from_fft(lambdas, smoothed_intensities, indice)
-    #prominence *= 10
-
     thickness_minmax = thickness_from_minmax(lambdas,
                                              smoothed_intensities,
                                              refractive_index=indice,
                                              min_peak_prominence=prominence)
-
-    #prominence, s, w = Prominence_from_fft(lambdas, smoothed_intensities, indice)
-    #print(f'Prom: {prominence}')
-    #indice =  1.324188 + 3102.060378 / (w**2)
-    #thickness_minmax = thickness_from_minmax(w,
-    #                                         s,
-    #                                         refractive_index=indice,
-    #                                         min_peak_prominence=prominence)
 
     result = thickness_minmax.thickness
 

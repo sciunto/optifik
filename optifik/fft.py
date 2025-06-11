@@ -74,7 +74,7 @@ def thickness_from_fft(wavelengths, intensities,
     thickness_fft = freq_max / 2.
 
     if plot:
-        plt.figure(figsize=(10, 6),dpi =600)
+        plt.figure(figsize=(10, 6), dpi=300)
         plt.loglog(inverse_wavelengths_fft, np.abs(intensities_fft))
         plt.loglog(freq_max, np.abs(intensities_fft[idx_max_fft]), 'o')
         plt.xlabel('Frequency')

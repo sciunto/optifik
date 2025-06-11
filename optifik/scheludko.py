@@ -165,7 +165,17 @@ def thickness_from_scheludko(wavelengths,
 
     peaks_min, peaks_max = finds_peak(wavelengths, intensities,
                                       min_peak_prominence=min_peak_prominence,
-                                      plot=False)
+                                      plot=plot)
+
+    failure, message = False, ''
+    if len(peaks_min) == 0:
+        message += 'Failed to detect at least one minimum. '
+        failure = True
+    if len(peaks_max) == 0:
+        message += 'Failed to detect at least one maximum. '
+        failure = True
+    if failure:
+        raise RuntimeError(message)
 
     # Get the last oscillation peaks
     lambda_min = wavelengths[peaks_min[-1]]
@@ -181,9 +191,9 @@ def thickness_from_scheludko(wavelengths,
     r_index_masked = r_index[mask]
     intensities_masked = intensities[mask]
 
-    min_ecart = np.inf
+    min_difference = np.inf
     best_m = None
-    best_h = None
+    best_h_values = None
 
     if plot:
         plt.figure(figsize=(10, 6), dpi=300)
@@ -195,18 +205,20 @@ def thickness_from_scheludko(wavelengths,
                                                 intensities_masked,
                                                 m, r_index_masked)
 
-        ecart = np.max(h_values) - np.min(h_values)
+        difference = np.max(h_values) - np.min(h_values)
 
-        print(f"Écart pour m={m} : {ecart:.3f} nm")
+        print(f"h-difference for m={m}: {difference:.1f} nm")
 
-        if ecart < min_ecart:
-            min_ecart = ecart
+        if difference < min_difference:
+            min_difference = difference
             best_m = m
-            best_h = h_values
+            best_h_values = h_values
 
         if plot:
             plt.plot(wavelengths_masked, h_values,'.', markersize=3, label=f"Épaisseur du film (Scheludko, m={m})")
 
+
+    print(f"Optimized: m={best_m}")
 
     # Delta
     num = intensities_masked - np.min(intensities_masked)
@@ -217,14 +229,15 @@ def thickness_from_scheludko(wavelengths,
     # DeltaVrai = (intensities_raw_masked -np.min(intensities_raw_masked))/(np.max(intensities_raw_masked) -np.min(intensities_raw_masked))
 
     DeltaScheludko = Delta(wavelengths_masked,
-                           np.mean(best_h),
+                           np.mean(best_h_values),
                            best_m,
                            r_index_masked)
 
 
     xdata = (wavelengths_masked, r_index_masked)
-    popt, pcov = curve_fit(lambda x, h: Delta_fit(x, h, m), xdata, DeltaVrai, p0=[np.mean(best_h)])
+    popt, pcov = curve_fit(lambda x, h: Delta_fit(x, h, m), xdata, DeltaVrai, p0=[np.mean(best_h_values)])
     fitted_h = popt[0]
+    std_err = np.sqrt(pcov[0][0])
 
     if plot:
         Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
@@ -232,15 +245,22 @@ def thickness_from_scheludko(wavelengths,
         plt.figure(figsize=(10, 6), dpi=300)
         plt.plot(wavelengths_masked, DeltaVrai,
                  'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
+
+        # Scheludko
+        label = rf'$\mathrm{{Scheludko}}\ (h = {np.mean(best_h_values):.1f} \pm {np.std(best_h_values):.1f}\ \mathrm{{nm}})$'
         plt.plot(wavelengths_masked, DeltaScheludko,
-                 'go-', markersize=2, label = rf'$\mathrm{{Scheludko}}\ (h = {np.mean(best_h):.1f} \pm {np.std(best_h):.1f}\ \mathrm{{nm}})$')
-        plt.plot(wavelengths_masked,  Delta_values, 'ro-',markersize=2, label=rf'$\mathrm{{Fit}}\ (h = {fitted_h:.1f}\pm {np.sqrt(pcov[0][0]):.1f} \ \mathrm{{nm}})$')
+                 'go-', markersize=2, label=label)
+        # Fit
+        label = rf'$\mathrm{{Fit}}\ (h = {fitted_h:.1f}\pm {std_err:.1f} \ \mathrm{{nm}})$'
+        plt.plot(wavelengths_masked,  Delta_values, 'ro-', markersize=2, label=label)
+
         plt.legend()
         plt.ylabel(r'$\Delta$')
         plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
+        import inspect
+        plt.title(inspect.currentframe().f_code.co_name)
 
-
-    return OptimizeResult(thickness=fitted_h,)
+    return OptimizeResult(thickness=fitted_h, stderr=std_err)
 
 
 def thickness_for_order0(wavelengths,
@@ -258,9 +278,11 @@ def thickness_for_order0(wavelengths,
 
     peaks_min, peaks_max = finds_peak(wavelengths, intensities,
                                       min_peak_prominence=min_peak_prominence,
-                                      plot=False)
+                                      plot=plot)
 
 
+    if len(peaks_max) != 1:
+        raise RuntimeError('Failed to detect a single maximum peak.')
 
     lambda_unique = wavelengths[peaks_max[0]]
 
@@ -272,50 +294,54 @@ def thickness_for_order0(wavelengths,
     intensities_masked = intensities[mask]
     intensities_I_min_masked =intensities_I_min[mask]
 
-    # best_m = None
-    # best_h = None
-
-
-    m = 0
-    h_values = thickness_scheludko_at_order(wavelengths_masked,
-                                           intensities_masked,
-                                           0,
-                                           r_index_masked,
-                                           Imin=intensities_I_min_masked)
+    # We assume to be at order zero.
+    best_m = 0
+    best_h_values = thickness_scheludko_at_order(wavelengths_masked,
+                                                 intensities_masked,
+                                                 best_m,
+                                                 r_index_masked,
+                                                 Imin=intensities_I_min_masked)
 
     if plot:
         plt.figure(figsize=(10, 6), dpi=300)
-        plt.plot(wavelengths_masked, h_values, label=r"Épaisseur du film (Scheludko, m=0)")
-
-
-    best_m = m
-    best_h = h_values
+        plt.plot(wavelengths_masked, best_h_values, label=r"Épaisseur du film (Scheludko, m=0)")
+        plt.ylabel(r'$h$ ($\mathrm{{nm}}$)')
+        plt.xlabel(r'$\lambda$ (nm)')
+        import inspect
+        plt.title(inspect.currentframe().f_code.co_name)
 
     # Delta
     num = intensities_masked - np.min(intensities_I_min_masked)
     denom = np.max(intensities_masked) - np.min(intensities_I_min_masked)
     DeltaVrai = num / denom
 
-    DeltaScheludko = Delta(wavelengths_masked, np.mean(best_h), best_m, r_index_masked)
-    #print(np.mean(best_h),np.std(best_h))
-
-    if plot:
-        plt.figure(figsize=(10, 6), dpi=300)
-        plt.plot(wavelengths_masked,DeltaVrai,'bo-', markersize=2,label=r'$\mathrm{{Raw}}\ \mathrm{{Data}}$')
-        plt.plot(wavelengths_masked,DeltaScheludko,'ro-', markersize=2,label = rf'$\mathrm{{Scheludko}}\ (h = {np.mean(best_h):.1f} \pm {np.std(best_h):.1f}\ \mathrm{{nm}})$')
-
+    DeltaScheludko = Delta(wavelengths_masked, np.mean(best_h_values), best_m, r_index_masked)
+    #print(np.mean(best_h_values),np.std(best_h_values))
 
     xdata = (wavelengths_masked, r_index_masked)
-    popt, pcov = curve_fit(lambda x, h: Delta_fit(x, h, m), xdata, DeltaVrai, p0=[np.mean(best_h)])
+    popt, pcov = curve_fit(lambda x, h: Delta_fit(x, h, best_m), xdata, DeltaVrai, p0=[np.mean(best_h_values)])
     fitted_h = popt[0]
+    std_err = np.sqrt(pcov[0][0])
 
     if plot:
         Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
-        plt.plot(wavelengths_masked, Delta_values,
-                 'go-', markersize=2,
-                 label=rf'$\mathrm{{Fit}}\ (h = {fitted_h:.1f}\pm {np.sqrt(pcov[0][0]):.1f} \ \mathrm{{nm}})$')
+
+        plt.figure(figsize=(10, 6), dpi=300)
+        plt.plot(wavelengths_masked, DeltaVrai,
+                 'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
+
+        # Scheludko
+        label = rf'$\mathrm{{Scheludko}}\ (h = {np.mean(best_h_values):.1f} \pm {np.std(best_h_values):.1f}\ \mathrm{{nm}})$'
+        plt.plot(wavelengths_masked, DeltaScheludko,
+                 'go-', markersize=2, label=label)
+        # Fit
+        label = rf'$\mathrm{{Fit}}\ (h = {fitted_h:.1f}\pm {std_err:.1f} \ \mathrm{{nm}})$'
+        plt.plot(wavelengths_masked,  Delta_values, 'ro-', markersize=2, label=label)
+
         plt.legend()
         plt.ylabel(r'$\Delta$')
-        plt.xlabel(r'$\lambda$ (nm)')
+        plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
+        import inspect
+        plt.title(inspect.currentframe().f_code.co_name)
 
-    return OptimizeResult(thickness=fitted_h,)
+    return OptimizeResult(thickness=fitted_h, stderr=std_err)

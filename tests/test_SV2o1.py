@@ -28,14 +28,13 @@ def test_SV2o1(spectrum_path, expected):
     smoothed_intensities = smooth_intensities(raw_intensities)
 
     refractive_index =  1.324188 + 3102.060378 / (lambdas**2)
-    prominence = 0.02
+    prominence = 0.020
 
 
-    thickness_scheludko = thickness_from_scheludko(lambdas, smoothed_intensities,
-                                                 refractive_index=refractive_index,
-                                                 min_peak_prominence=prominence,
-                                                 plot=False)
-    result = thickness_scheludko.thickness
+    result = thickness_from_scheludko(lambdas, smoothed_intensities,
+                                      refractive_index=refractive_index,
+                                      min_peak_prominence=prominence,
+                                      plot=False)
 
-    assert_allclose(result, expected, rtol=1e-1)
+    assert_allclose(result.thickness, expected, rtol=1e-1)
 

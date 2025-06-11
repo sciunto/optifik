@@ -116,6 +116,8 @@ def thickness_from_minmax(wavelengths,
 
             ax.legend()
             ax.set_title(f'Thickness = {thickness_minmax:.2f} nm')
+            import inspect
+            plt.title(inspect.currentframe().f_code.co_name)
             plt.tight_layout()
             plt.show()
 
@@ -140,6 +142,8 @@ def thickness_from_minmax(wavelengths,
 
             ax.legend()
             ax.set_title(f'Thickness = {thickness_minmax:.2f} nm')
+            import inspect
+            plt.title(inspect.currentframe().f_code.co_name)
             plt.tight_layout()
             plt.show()
 

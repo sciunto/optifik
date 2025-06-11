@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 
 
 from optifik.analysis import *
-from optifik.fft import Prominence_from_fft
-from optifik.auto import auto
 from optifik import io
 
 plt.rc('text', usetex=True)
@@ -20,9 +18,45 @@ plt.rcParams.update({
 })
 
 
-
-def play():
+def play_oder1():
     ##### Chemin du dossier contenant le spectre #####
+    from optifik.scheludko import thickness_from_scheludko
+
+    DATA_FOLDER = os.path.abspath(os.path.join(os.path.curdir, 'tests', 'basic'))
+
+    #SAVE_FOLDER = DATA_FOLDER
+
+    # FILE_NAME = '003582.xy' #FFT Exemple -> FFT 3524.51
+    # FILE_NAME = '000004310.xy' #OOspectro Exemple -> minmax 1338.35
+    # FILE_NAME = '000005253.xy'#Scheludko 4 pics Exemple -> scheludko ²
+    # FILE_NAME = '000006544.xy'#Scheludko 2 pics Exemple -> ombre ## Diviser prominence FFT par 2
+    # FILE_NAME = '000018918.xy' #Scheludko 1 pic max Exemple -> ombre ## Diviser prominence FFT par 2
+
+    FILE_NAME = '000004310.xy' #TEST#
+    spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
+
+ 
+
+    lambdas, intensities = io.load_spectrum(spectrum_file)
+    plot_spectrum(lambdas, intensities, title='Raw')
+
+    lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
+    plot_spectrum(lambdas, intensities, title='Raw, cropped')
+
+    smoothed_intensities = smooth_intensities(intensities)
+    plot_spectrum(lambdas, smoothed_intensities, title='Smoothed')
+
+    refractive_index =  1.324188 + 3102.060378 / (lambdas**2)
+    prominence = 0.025
+    peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
+                                                     min_peak_prominence=prominence,
+                                                     plot=True)
+ 
+
+
+def play_order1():
+    ##### Chemin du dossier contenant le spectre #####
+    from optifik.scheludko import thickness_from_scheludko
 
     DATA_FOLDER = os.path.abspath(os.path.join(os.path.curdir, 'tests', 'basic'))
 
@@ -38,7 +72,7 @@ def play():
     spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
 
 
-    spectrum_file = 'tests/spectraVictor1/T5469.xy' #TEST#
+    spectrum_file = 'tests/spectraVictor2/order1/T10219.xy' #TEST#
 
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
@@ -49,18 +83,58 @@ def play():
     smoothed_intensities = smooth_intensities(intensities)
     plot_spectrum(lambdas, smoothed_intensities, title='Smoothed')
 
-    prominence = 0.02
+    refractive_index =  1.324188 + 3102.060378 / (lambdas**2)
+    prominence = 0.025
     peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
                                                      min_peak_prominence=prominence,
                                                      plot=True)
 
-    indice =  1.324188 + 3102.060378 / (lambdas**2)
-    p, s, w = Prominence_from_fft(lambdas, smoothed_intensities, indice, plot=True)
+    result = thickness_from_scheludko(lambdas, smoothed_intensities,
+                                      refractive_index=refractive_index,
+                                      min_peak_prominence=prominence,
+                                      plot=True)
 
-    print(p)
+def play_order0():
+    ##### Chemin du dossier contenant le spectre #####
+    from optifik.scheludko import thickness_for_order0
+
+    DATA_FOLDER = os.path.abspath(os.path.join(os.path.curdir, 'tests', 'basic'))
+
+    #SAVE_FOLDER = DATA_FOLDER
+
+    # FILE_NAME = '003582.xy' #FFT Exemple -> FFT 3524.51
+    # FILE_NAME = '000004310.xy' #OOspectro Exemple -> minmax 1338.35
+    # FILE_NAME = '000005253.xy'#Scheludko 4 pics Exemple -> scheludko ²
+    # FILE_NAME = '000006544.xy'#Scheludko 2 pics Exemple -> ombre ## Diviser prominence FFT par 2
+    # FILE_NAME = '000018918.xy' #Scheludko 1 pic max Exemple -> ombre ## Diviser prominence FFT par 2
+
+    FILE_NAME = '000004310.xy' #TEST#
+    spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
+
+
+    spectrum_file = 'tests/spectraVictor2/order0/T14787.xy' #TEST#
+
+    lambdas, intensities = io.load_spectrum(spectrum_file)
+    plot_spectrum(lambdas, intensities, title='Raw')
+
+    lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
+    plot_spectrum(lambdas, intensities, title='Raw, cropped')
+
+    smoothed_intensities = smooth_intensities(intensities)
+    plot_spectrum(lambdas, smoothed_intensities, title='Smoothed')
+
+    refractive_index =  1.324188 + 3102.060378 / (lambdas**2)
+    prominence = .02
     peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
-                                                     min_peak_prominence=p,
+                                                     min_peak_prominence=prominence,
                                                      plot=True)
+
+    result = thickness_for_order0(lambdas, smoothed_intensities,
+                                      refractive_index=refractive_index,
+                                      min_peak_prominence=prominence,
+                                      plot=True)
+
+ 
 
 def check_basic():
 
@@ -139,4 +213,5 @@ if __name__ == '__main__':
 
     #check_basic()
     #check_SV1()
-    play()
+    #play()
+    play_order0()

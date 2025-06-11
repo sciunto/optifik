@@ -46,8 +46,6 @@ def finds_peak(wavelengths, intensities, min_peak_prominence, min_peak_distance=
     (peaks_min, peaks_max)
 
     """
-
-
     peaks_max, _ = find_peaks(intensities, prominence=min_peak_prominence, distance=min_peak_distance)
     peaks_min, _ = find_peaks(-intensities, prominence=min_peak_prominence, distance=min_peak_distance)
 
@@ -59,9 +57,10 @@ def finds_peak(wavelengths, intensities, min_peak_prominence, min_peak_distance=
         plt.xlabel(r'$\lambda$ (nm)')
         plt.ylabel(r'$I^*$')
         plt.legend()
+        import inspect
+        plt.title(inspect.currentframe().f_code.co_name)
         plt.tight_layout()
         plt.show()
-
 
     return peaks_min, peaks_max
 
