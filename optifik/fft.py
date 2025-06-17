@@ -4,16 +4,8 @@ from scipy.fftpack import fft, ifft, fftfreq
 
 
 import matplotlib.pyplot as plt
-plt.rc('text', usetex=True)
-plt.rcParams.update({
-    'axes.labelsize': 26,
-    'xtick.labelsize': 32,
-    'ytick.labelsize': 32,
-    'legend.fontsize': 23,
-})
 
-
-from .utils import OptimizeResult
+from .utils import OptimizeResult, setup_matplotlib
 
 
 
@@ -43,6 +35,9 @@ def thickness_from_fft(wavelengths, intensities,
     results : Instance of `OptimizeResult` class.
         The attribute `thickness` gives the thickness value in nm.
     """
+    if plot:
+        setup_matplotlib()
+
     if num_half_space is None:
         num_half_space = 10 * len(wavelengths)
 
@@ -74,7 +69,7 @@ def thickness_from_fft(wavelengths, intensities,
     thickness_fft = freq_max / 2.
 
     if plot:
-        plt.figure(figsize=(10, 6), dpi=300)
+        plt.figure()
         plt.loglog(inverse_wavelengths_fft, np.abs(intensities_fft))
         plt.loglog(freq_max, np.abs(intensities_fft[idx_max_fft]), 'o')
         plt.xlabel('Frequency')
@@ -91,7 +86,7 @@ def thickness_from_fft(wavelengths, intensities,
 #
 #    # # # 1. Spectre original
 #    # if plot:
-#    #     plt.figure(figsize=(10, 6), dpi=150)
+#    #     plt.figure()
 #    #     plt.plot(1/wavelengths, intensities, label='Spectre original')
 #    #     plt.xlabel('1/Longueur d\'onde (nm-1)')
 #    #     plt.ylabel('Intensité')
@@ -119,7 +114,7 @@ def thickness_from_fft(wavelengths, intensities,
 #    F_max = freqs_pos[idx_max]
 #
 #    if plot:
-#        plt.figure(figsize=(10, 6), dpi=150)
+#        plt.figure()
 #        plt.plot(freqs_pos, abs_fft_pos, label='|FFT|')
 #        plt.axvline(F_max, color='r', linestyle='--', label='Pic principal')
 #        plt.xlabel('Distance optique [nm]')
@@ -153,7 +148,7 @@ def thickness_from_fft(wavelengths, intensities,
 #
 #    # 9. Affichage reconstruction
 #    if plot:
-#        plt.figure(figsize=(10, 6), dpi=150)
+#        plt.figure()
 #        plt.plot(lambda_reconstructed, intensities_k, '--', label='Original interpolé')
 #        plt.plot(lambda_reconstructed, signal_filtered_HF,'--', color='gray')
 #

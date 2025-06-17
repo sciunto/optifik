@@ -25,3 +25,26 @@ class OptimizeResult(dict):
 
     def __dir__(self):
         return list(self.keys())
+
+
+
+
+def is_latex_installed():
+    import shutil
+    return shutil.which("latex") is not None or shutil.which("pdflatex") is not None
+
+def setup_matplotlib():
+    """
+    Configure matplotlib with LaTeX text rendering and custom font sizes.
+
+    """
+    import matplotlib.pyplot as plt
+    plt.rc('text', usetex=is_latex_installed())
+    plt.rcParams.update({
+        'figure.dpi': 300,
+        'figure.figsize': (10, 6),
+        'axes.labelsize': 26,
+        'xtick.labelsize': 32,
+        'ytick.labelsize': 32,
+        'legend.fontsize': 23,
+    })

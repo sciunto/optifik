@@ -10,11 +10,11 @@ plt.rcParams.update({
     'legend.fontsize': 23,
 })
 
-
+from .utils import setup_matplotlib
 
 def plot_spectrum(wavelengths, intensities, title=''):
-
-    plt.figure(figsize=(10, 6), dpi=300)
+    setup_matplotlib()
+    plt.figure()
     plt.plot(wavelengths, intensities, 'o-', markersize=2)
     plt.xlabel(r'$\lambda$ (nm)')
     plt.ylabel(r'$I^*$')
@@ -46,11 +46,14 @@ def finds_peak(wavelengths, intensities, min_peak_prominence, min_peak_distance=
     (peaks_min, peaks_max)
 
     """
+    if plot:
+        setup_matplotlib()
+
     peaks_max, _ = find_peaks(intensities, prominence=min_peak_prominence, distance=min_peak_distance)
     peaks_min, _ = find_peaks(-intensities, prominence=min_peak_prominence, distance=min_peak_distance)
 
     if plot:
-        plt.figure(figsize=(10, 6), dpi=300)
+        plt.figure()
         plt.plot(wavelengths, intensities, 'o-', markersize=2, label="Smoothed data")
         plt.plot(wavelengths[peaks_max], intensities[peaks_max], 'ro')
         plt.plot(wavelengths[peaks_min], intensities[peaks_min], 'ro')

@@ -211,6 +211,9 @@ def check_SV1():
 
 if __name__ == '__main__':
 
+    from optifik.utils import is_latex_installed
+    print(is_latex_installed())
+
     #check_basic()
     #check_SV1()
     #play()

@@ -2,16 +2,9 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 import matplotlib.pyplot as plt
-plt.rc('text', usetex=True)
-plt.rcParams.update({
-    'axes.labelsize': 26,
-    'xtick.labelsize': 32,
-    'ytick.labelsize': 32,
-    'legend.fontsize': 23,
-})
 
 from .io import load_spectrum
-from .utils import OptimizeResult
+from .utils import OptimizeResult, setup_matplotlib
 from .analysis import finds_peak
 
 
@@ -160,6 +153,9 @@ def thickness_from_scheludko(wavelengths,
         DESCRIPTION.
 
     """
+    if plot:
+        setup_matplotlib()
+
     max_tested_order = 12
     r_index = refractive_index
 
@@ -196,7 +192,7 @@ def thickness_from_scheludko(wavelengths,
     best_h_values = None
 
     if plot:
-        plt.figure(figsize=(10, 6), dpi=300)
+        plt.figure()
         plt.ylabel(r'$h$ ($\mathrm{{nm}}$)')
         plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
 
@@ -242,7 +238,7 @@ def thickness_from_scheludko(wavelengths,
     if plot:
         Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
 
-        plt.figure(figsize=(10, 6), dpi=300)
+        plt.figure()
         plt.plot(wavelengths_masked, DeltaVrai,
                  'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
 
@@ -268,6 +264,8 @@ def thickness_for_order0(wavelengths,
                          refractive_index,
                          min_peak_prominence,
                          plot=None):
+    if plot:
+        setup_matplotlib()
 
     # TODO :
     # Load "trou"
@@ -303,7 +301,7 @@ def thickness_for_order0(wavelengths,
                                                  Imin=intensities_I_min_masked)
 
     if plot:
-        plt.figure(figsize=(10, 6), dpi=300)
+        plt.figure()
         plt.plot(wavelengths_masked, best_h_values, label=r"Épaisseur du film (Scheludko, m=0)")
         plt.ylabel(r'$h$ ($\mathrm{{nm}}$)')
         plt.xlabel(r'$\lambda$ (nm)')
@@ -326,7 +324,7 @@ def thickness_for_order0(wavelengths,
     if plot:
         Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
 
-        plt.figure(figsize=(10, 6), dpi=300)
+        plt.figure()
         plt.plot(wavelengths_masked, DeltaVrai,
                  'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
 

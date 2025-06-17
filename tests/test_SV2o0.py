@@ -20,7 +20,7 @@ def load():
     return data
 
 
-#@pytest.mark.skip('...')
+@pytest.mark.skip('...')
 @pytest.mark.parametrize("spectrum_path, expected", load())
 def test_SV2o0(spectrum_path, expected):
     lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)

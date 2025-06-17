@@ -5,15 +5,8 @@ from skimage.measure import ransac, LineModelND
 from scipy.signal import find_peaks
 
 import matplotlib.pyplot as plt
-plt.rc('text', usetex=True)
-plt.rcParams.update({
-    'axes.labelsize': 26,
-    'xtick.labelsize': 32,
-    'ytick.labelsize': 32,
-    'legend.fontsize': 23,
-})
 
-from .utils import OptimizeResult
+from .utils import OptimizeResult, setup_matplotlib
 
 
 def thickness_from_minmax(wavelengths,
@@ -56,6 +49,8 @@ def thickness_from_minmax(wavelengths,
     see the documentation of `scipy.signal.find_peaks`. This function
     is used to find extrema.
     """
+    if plot:
+        setup_matplotlib()
 
     peaks_max, _ = find_peaks(intensities, prominence=min_peak_prominence, distance=min_peak_distance)
     peaks_min, _ = find_peaks(-intensities, prominence=min_peak_prominence, distance=min_peak_distance)
@@ -106,7 +101,7 @@ def thickness_from_minmax(wavelengths,
         #slope = slransac.estimator_.coef_[0]
 
         if plot:
-            fig, ax = plt.subplots(figsize=(10, 6), dpi=600)
+            fig, ax = plt.subplots()
 
             ax.set_xlabel('extremum n°')
             ax.set_ylabel('$n$($\lambda$) / $\lambda$')
@@ -133,7 +128,7 @@ def thickness_from_minmax(wavelengths,
         thickness_minmax = 1 / slope / 4
 
         if plot:
-            fig, ax = plt.subplots(figsize=(8, 6))
+            fig, ax = plt.subplots()
 
             ax.set_xlabel('extremum n°')
             ax.set_ylabel('1 / $\lambda$')
