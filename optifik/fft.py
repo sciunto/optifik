@@ -27,7 +27,7 @@ def thickness_from_fft(wavelengths, intensities,
     num_half_space : scalar, optional
         Number of points to compute FFT's half space.
         If `None`, default corresponds to `10*len(wavelengths)`.
-    debug : boolean, optional
+    plot : boolean, optional
         Show plot of the transformed signal and the peak detection.
 
     Returns
@@ -77,92 +77,3 @@ def thickness_from_fft(wavelengths, intensities,
         plt.title(f'Thickness={thickness_fft:.2f}')
 
     return OptimizeResult(thickness=thickness_fft,)
-
-
-#def Prominence_from_fft(wavelengths, intensities, refractive_index,
-#                        num_half_space=None, plot=None):
-#    if num_half_space is None:
-#        num_half_space = len(wavelengths)
-#
-#    # # # 1. Spectre original
-#    # if plot:
-#    #     plt.figure()
-#    #     plt.plot(1/wavelengths, intensities, label='Spectre original')
-#    #     plt.xlabel('1/Longueur d\'onde (nm-1)')
-#    #     plt.ylabel('Intensité')
-#    #     plt.legend()
-#    #     plt.show()
-#
-#
-#    # 2. Conversion lambda → k = n(λ) / λ
-#    k_vals = refractive_index / wavelengths
-#    f_interp = interp1d(k_vals, intensities, kind='linear', fill_value="extrapolate")
-#
-#    # 3. Axe k uniforme + interpolation
-#    k_linspace = np.linspace(k_vals[0], k_vals[-1], 2 * num_half_space)
-#    intensities_k = f_interp(k_linspace)
-#
-#    # 4. FFT
-#    delta_k = (k_vals[-1] - k_vals[0]) / (2 * num_half_space)
-#    fft_vals = fft(intensities_k)
-#    freqs = fftfreq(2 * num_half_space, delta_k)
-#
-#    # 5. Pic FFT
-#    freqs_pos = freqs[freqs > 0]
-#    abs_fft_pos = np.abs(fft_vals[freqs > 0])
-#    idx_max = np.argmax(abs_fft_pos)
-#    F_max = freqs_pos[idx_max]
-#
-#    if plot:
-#        plt.figure()
-#        plt.plot(freqs_pos, abs_fft_pos, label='|FFT|')
-#        plt.axvline(F_max, color='r', linestyle='--', label='Pic principal')
-#        plt.xlabel('Distance optique [nm]')
-#        plt.ylabel(r'FFT($I^*$)')
-#        plt.xscale('log')
-#        plt.yscale('log')
-#        plt.legend()
-#        plt.show()
-#
-#    # 6. Filtrage (garde hautes fréquences)
-#    cutoff_HF = 2 * F_max
-#
-#    mask_HF = np.abs(freqs) >= cutoff_HF
-#    fft_filtered_HF = np.zeros_like(fft_vals, dtype=complex)
-#    fft_filtered_HF[mask_HF] = fft_vals[mask_HF]
-#
-#    # 7. Filtrage (garde basses fréquences)
-#    cutoff_BF = 10 * F_max
-#    mask_BF = np.abs(freqs) <= cutoff_BF
-#    fft_filtered_BF = np.zeros_like(fft_vals, dtype=complex)
-#    fft_filtered_BF[mask_BF] = fft_vals[mask_BF]
-#
-#
-#    # 8. Reconstruction
-#    signal_filtered_HF = np.real(ifft(fft_filtered_HF))
-#    signal_filtered_BF = np.real(ifft(fft_filtered_BF))
-#    lambda_reconstructed = np.interp(k_linspace, k_vals[::-1], wavelengths[::-1])
-#
-#    # Masque dans la plage [550, 700] nm
-#    mask_Cam_Sensitivity = (lambda_reconstructed >= 550) & (lambda_reconstructed <= 700)
-#
-#    # 9. Affichage reconstruction
-#    if plot:
-#        plt.figure()
-#        plt.plot(lambda_reconstructed, intensities_k, '--', label='Original interpolé')
-#        plt.plot(lambda_reconstructed, signal_filtered_HF,'--', color='gray')
-#
-#        plt.plot(lambda_reconstructed[mask_Cam_Sensitivity], signal_filtered_HF[mask_Cam_Sensitivity],
-#                 color='orange', label='Spectre filtré HF')
-#        plt.plot(lambda_reconstructed, signal_filtered_BF,
-#                 color='red', label='Spectre filtré BF')
-#
-#        plt.xlabel('Wavelength (nm)')
-#        plt.ylabel('Intensity')
-#        plt.legend()
-#        plt.show()
-#
-#    max_amplitude = np.max(np.abs(signal_filtered_HF[mask_Cam_Sensitivity]))
-#
-#    return max_amplitude, signal_filtered_BF, lambda_reconstructed
-#
