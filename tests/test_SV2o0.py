@@ -26,7 +26,7 @@ def load(filename):
 def test_SV2o0_small_tol(spectrum_path, expected):
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
 
-    File_I_min = 'tests/spectre_trou/000043641.xy'
+    File_I_min = os.path.join('tests', 'spectraVictor2', 'void.xy')
     _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
 
     smoothed_intensities = smooth_intensities(raw_intensities)
@@ -56,7 +56,7 @@ def test_SV2o0_small_tol(spectrum_path, expected):
 def test_SV2o0_large_tol(spectrum_path, expected):
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
 
-    File_I_min = 'tests/spectre_trou/000043641.xy'
+    File_I_min = os.path.join('tests', 'spectraVictor2', 'void.xy')
     _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
 
     smoothed_intensities = smooth_intensities(raw_intensities)

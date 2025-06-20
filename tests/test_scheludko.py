@@ -133,7 +133,7 @@ def test_order0():
     prominence = 0.03
 
 
-    File_I_min = 'tests/spectre_trou/000043641.xy'
+    File_I_min = os.path.join('tests', 'spectraVictor2', 'void.xy')
     _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
 
 

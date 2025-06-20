@@ -35,7 +35,7 @@ def thickness_from_minmax(wavelengths,
     method : string, optional
         Either 'linreg' for linear regression or 'ransac'
         for Randon Sampling Consensus.
-    debug : boolean, optional
+    plot : boolean, optional
         Show plots of peak detection and lin regression.
 
     Returns
