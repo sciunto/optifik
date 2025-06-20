@@ -130,8 +130,11 @@ def test_order0():
     lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
-
     prominence = 0.03
+    
+    
+    File_I_min = 'tests/spectre_trou/000043641.xy'
+    _, intensities_void = load_spectrum(File_I_min, lambda_min=450)
 
 
     w_start, w_stop = None, None
@@ -141,6 +144,7 @@ def test_order0():
                                       wavelength_start=w_start,
                                       wavelength_stop=w_stop,
                                       interference_order=0,
+                                      intensities_void=intensities_void,
                                       plot=False)
 
 

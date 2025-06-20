@@ -9,10 +9,10 @@ from .analysis import finds_peak
 
 
 def _thicknesses_scheludko_at_order(wavelengths,
-                                 intensities,
-                                 interference_order,
-                                 refractive_index,
-                                 Imin=None):
+                                    intensities,
+                                    interference_order,
+                                    refractive_index,
+                                    intensities_void=None):
     """
     Compute thicknesses vs wavelength for a given interference order.
 
@@ -26,25 +26,25 @@ def _thicknesses_scheludko_at_order(wavelengths,
         Interference order.
     refractive_index : array_like (or float)
         Refractive index.
-    Imin : TYPE, optional
-        DESCRIPTION. The default is None.
+    intensities_void : array, optional
+        Intensities of void.
 
     Returns
     -------
-    thickness : TYPE
-        DESCRIPTION.
+    thicknesses : array
 
     """
-    if Imin is None:
+    if intensities_void is None:
         Imin = np.min(intensities)
+    else:
+        Imin = intensities_void
 
     n = refractive_index
     m = interference_order
-    I = (np.asarray(intensities) - Imin) / (np.max(intensities) - Imin)
-
+    I_norm = (np.asarray(intensities) - Imin) / (np.max(intensities) - Imin)
 
     prefactor = wavelengths / (2 * np.pi * n)
-    argument = np.sqrt(I / (1 + (1 - I) * (n**2 - 1)**2 / (4 * n**2)))
+    argument = np.sqrt(I_norm / (1 + (1 - I_norm) * (n**2 - 1)**2 / (4 * n**2)))
 
     if m % 2 == 0:
         term1 = (m / 2) * np.pi
@@ -75,7 +75,6 @@ def _Delta(wavelengths, thickness, interference_order, refractive_index):
     -------
     ndarray
         Delta values.
-
     """
 
     # ensure that the entries are numpy arrays
@@ -131,24 +130,51 @@ def get_default_start_stop_wavelengths(wavelengths,
                                        refractive_index,
                                        min_peak_prominence,
                                        plot=None):
+    """
+    Returns the start and stop wavelength values of the last monotonic branch.
+
+    Parameters
+    ----------
+    wavelengths : array
+        Wavelength values in nm.
+    intensities : array
+        Intensity values.
+    refractive_index : scalar, optional
+        Value of the refractive index of the medium.
+    min_peak_prominence : scalar
+        Required prominence of peaks.
+    plot : bool, optional
+        Display a curve, useful for checking or debuging. The default is None.
+
+
+    Raises
+    ------
+    RuntimeError
+        if at least one maximum and one minimum are not detected.
+
+    Returns
+    -------
+    wavelength_start : scalar
+    wavelength_stop : scalar
+    """
     # idx_min idx max
-    peaks_min, peaks_max = finds_peak(wavelengths, intensities,
-                                      min_peak_prominence=min_peak_prominence,
-                                      plot=plot)
+    idx_peaks_min, idx_peaks_max = finds_peak(wavelengths, intensities,
+                                              min_peak_prominence=min_peak_prominence,
+                                              plot=plot)
 
     failure, message = False, ''
-    if len(peaks_min) == 0:
+    if len(idx_peaks_min) == 0:
         message += 'Failed to detect at least one minimum. '
         failure = True
-    if len(peaks_max) == 0:
+    if len(idx_peaks_max) == 0:
         message += 'Failed to detect at least one maximum. '
         failure = True
     if failure:
         raise RuntimeError(message)
 
     # Get the last oscillation peaks
-    lambda_min = wavelengths[peaks_min[-1]]
-    lambda_max = wavelengths[peaks_max[-1]]
+    lambda_min = wavelengths[idx_peaks_min[-1]]
+    lambda_max = wavelengths[idx_peaks_max[-1]]
 
     # Order them
     wavelength_start = min(lambda_min, lambda_max)
@@ -163,9 +189,10 @@ def thickness_from_scheludko(wavelengths,
                              wavelength_start=None,
                              wavelength_stop=None,
                              interference_order=None,
+                             intensities_void=None,
                              plot=None):
     """
-
+    Compute the film thickness based on Scheludko method.
 
     Parameters
     ----------
@@ -175,13 +202,25 @@ def thickness_from_scheludko(wavelengths,
         Intensity values.
     refractive_index : scalar, optional
         Value of the refractive index of the medium.
+    wavelength_start : scalar, optional
+        Starting value of a monotonic branch.
+        Mandatory if interference_order != 0.
+    wavelength_start : scalar, optional
+        Stoping value of a monotonic branch.
+        Mandatory if interference_order != 0.
+    interference_order : scalar, optional
+        Interference order, zero or positive integer.
+        If set to None, the value is guessed.
+    intensities_void : array, optional
+        Intensity in absence of a film.
+        Mandatory if interference_order == 0.
     plot : bool, optional
         Display a curve, useful for checking or debuging. The default is None.
 
     Returns
     -------
-    thickness : TYPE
-        DESCRIPTION.
+    results : Instance of `OptimizeResult` class.
+        The attribute `thickness` gives the thickness value in nm.
 
     """
     if plot:
@@ -196,7 +235,6 @@ def thickness_from_scheludko(wavelengths,
 
     r_index = refractive_index
 
-
     # Handle the interference order
     if interference_order is None:
         # A bit extreme...
@@ -208,7 +246,6 @@ def thickness_from_scheludko(wavelengths,
         r_index_masked = r_index[mask]
         intensities_masked = intensities[mask]
 
-
         min_difference = np.inf
         thickness_values = None
 
@@ -217,26 +254,25 @@ def thickness_from_scheludko(wavelengths,
             plt.ylabel(r'$h$ ($\mathrm{{nm}}$)')
             plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
 
-        for m in range(0, max_tested_order+1):
+        for _order in range(0, max_tested_order+1):
             h_values = _thicknesses_scheludko_at_order(wavelengths_masked,
                                                        intensities_masked,
-                                                       m,
+                                                       _order,
                                                        r_index_masked)
 
             difference = np.max(h_values) - np.min(h_values)
 
-            print(f"h-difference for m={m}: {difference:.1f} nm")
+            print(f"h-difference for m={_order}: {difference:.1f} nm")
 
             if difference < min_difference:
                 min_difference = difference
-                interference_order = m
+                interference_order = _order
                 thickness_values = h_values
 
             if plot:
-                plt.plot(wavelengths_masked, h_values,'.', markersize=3, label=f"Épaisseur du film (Scheludko, m={m})")
+                plt.plot(wavelengths_masked, h_values, '.',
+                         markersize=3, label=f"Order={_order}")
     elif interference_order == 0:
-        File_I_min = 'tests/spectre_trou/000043641.xy'
-        _, intensities_I_min = load_spectrum(File_I_min, lambda_min=450)
 
         min_peak_prominence = 0.02
         peaks_min, peaks_max = finds_peak(wavelengths, intensities,
@@ -252,7 +288,7 @@ def thickness_from_scheludko(wavelengths,
         wavelengths_masked = wavelengths[mask]
         r_index_masked = r_index[mask]
         intensities_masked = intensities[mask]
-        intensities_I_min_masked =intensities_I_min[mask]
+        intensities_I_min_masked = intensities_void[mask]
 
         interference_order = 0
         thickness_values = _thicknesses_scheludko_at_order(wavelengths_masked,
@@ -289,9 +325,9 @@ def thickness_from_scheludko(wavelengths,
     # Delta_from_data = (intensities_raw_masked -np.min(intensities_raw_masked))/(np.max(intensities_raw_masked) -np.min(intensities_raw_masked))
 
     DeltaScheludko = _Delta(wavelengths_masked,
-                           np.mean(thickness_values),
-                           interference_order,
-                           r_index_masked)
+                            np.mean(thickness_values),
+                            interference_order,
+                            r_index_masked)
 
 
     xdata = (wavelengths_masked, r_index_masked)
