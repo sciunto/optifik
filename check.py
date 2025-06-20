@@ -18,9 +18,10 @@ plt.rcParams.update({
 })
 
 
-def play_oder1():
+def minmax():
     ##### Chemin du dossier contenant le spectre #####
     from optifik.scheludko import thickness_from_scheludko
+    from optifik.scheludko import get_default_start_stop_wavelengths
 
     DATA_FOLDER = os.path.abspath(os.path.join(os.path.curdir, 'tests', 'basic'))
 
@@ -35,7 +36,7 @@ def play_oder1():
     FILE_NAME = '000004310.xy' #TEST#
     spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
 
- 
+
 
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
@@ -51,12 +52,13 @@ def play_oder1():
     peaks_min, peaks_max = finds_peak(lambdas, smoothed_intensities,
                                                      min_peak_prominence=prominence,
                                                      plot=True)
- 
+
 
 
 def play_order1():
     ##### Chemin du dossier contenant le spectre #####
     from optifik.scheludko import thickness_from_scheludko
+    from optifik.scheludko import get_default_start_stop_wavelengths
 
     DATA_FOLDER = os.path.abspath(os.path.join(os.path.curdir, 'tests', 'basic'))
 
@@ -89,9 +91,19 @@ def play_order1():
                                                      min_peak_prominence=prominence,
                                                      plot=True)
 
-    result = thickness_from_scheludko(lambdas, smoothed_intensities,
+    w_start, w_stop = get_default_start_stop_wavelengths(lambdas,
+                                                         smoothed_intensities,
+                                                         refractive_index,
+                                                         min_peak_prominence=prominence,
+                                                         plot=True)
+
+
+    result = thickness_from_scheludko(lambdas,
+                                      smoothed_intensities,
                                       refractive_index=refractive_index,
-                                      min_peak_prominence=prominence,
+                                      wavelength_start=w_start,
+                                      wavelength_stop=w_stop,
+                                      interference_order=None,
                                       plot=True)
 
 def play_order0():
@@ -135,7 +147,7 @@ def play_order0():
                                       min_peak_prominence=prominence,
                                       plot=True)
 
- 
+
 
 def check_basic():
 
@@ -219,4 +231,4 @@ if __name__ == '__main__':
     #check_SV1()
     #play()
     play_order1()
-    
+

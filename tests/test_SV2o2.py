@@ -4,6 +4,7 @@ from numpy.testing import assert_allclose
 import pytest
 
 from optifik.scheludko import thickness_from_scheludko
+from optifik.scheludko import get_default_start_stop_wavelengths
 from optifik.io import load_spectrum
 from optifik.analysis import smooth_intensities
 
@@ -25,14 +26,23 @@ def test_SV2o2(spectrum_path, expected):
     lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
 
-    refractive_index =  1.324188 + 3102.060378 / (lambdas**2)
+    r_index =  1.324188 + 3102.060378 / (lambdas**2)
     prominence = 0.01
 
+    w_start, w_stop = get_default_start_stop_wavelengths(lambdas,
+                                                         smoothed_intensities,
+                                                         refractive_index=r_index,
+                                                         min_peak_prominence=prominence,
+                                                         plot=False)
 
-    thickness_scheludko = thickness_from_scheludko(lambdas, smoothed_intensities,
-                                                 refractive_index=refractive_index,
-                                                 min_peak_prominence=prominence,
-                                                 plot=False)
+    thickness_scheludko = thickness_from_scheludko(lambdas,
+                                                   smoothed_intensities,
+                                                   refractive_index=r_index,
+                                                   wavelength_start=w_start,
+                                                   wavelength_stop=w_stop,
+                                                   interference_order=None,
+                                                   plot=False)
+
     result = thickness_scheludko.thickness
 
     assert_allclose(result, expected, rtol=1e-1)

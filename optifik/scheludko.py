@@ -126,12 +126,43 @@ def _Delta_fit(xdata, thickness, interference_order):
     return _Delta(lambdas, thickness, interference_order, r_index)
 
 
+def get_default_start_stop_wavelengths(wavelengths,
+                                       intensities,
+                                       refractive_index,
+                                       min_peak_prominence,
+                                       plot=None):
+    # idx_min idx max
+    peaks_min, peaks_max = finds_peak(wavelengths, intensities,
+                                      min_peak_prominence=min_peak_prominence,
+                                      plot=plot)
+
+    failure, message = False, ''
+    if len(peaks_min) == 0:
+        message += 'Failed to detect at least one minimum. '
+        failure = True
+    if len(peaks_max) == 0:
+        message += 'Failed to detect at least one maximum. '
+        failure = True
+    if failure:
+        raise RuntimeError(message)
+
+    # Get the last oscillation peaks
+    lambda_min = wavelengths[peaks_min[-1]]
+    lambda_max = wavelengths[peaks_max[-1]]
+
+    # Order them
+    wavelength_start = min(lambda_min, lambda_max)
+    wavelength_stop = max(lambda_min, lambda_max)
+
+    return wavelength_start, wavelength_stop
 
 
 def thickness_from_scheludko(wavelengths,
                              intensities,
                              refractive_index,
-                             min_peak_prominence,
+                             wavelength_start,
+                             wavelength_stop,
+                             interference_order=None,
                              plot=None):
     """
 
@@ -160,69 +191,53 @@ def thickness_from_scheludko(wavelengths,
     max_tested_order = 12
     r_index = refractive_index
 
-    # idx_min idx max
-    peaks_min, peaks_max = finds_peak(wavelengths, intensities,
-                                      min_peak_prominence=min_peak_prominence,
-                                      plot=plot)
-
-    failure, message = False, ''
-    if len(peaks_min) == 0:
-        message += 'Failed to detect at least one minimum. '
-        failure = True
-    if len(peaks_max) == 0:
-        message += 'Failed to detect at least one maximum. '
-        failure = True
-    if failure:
-        raise RuntimeError(message)
-
-    # Get the last oscillation peaks
-    lambda_min = wavelengths[peaks_min[-1]]
-    lambda_max = wavelengths[peaks_max[-1]]
-
-    # Order them
-    lambda_start = min(lambda_min, lambda_max)
-    lambda_stop = max(lambda_min, lambda_max)
 
 
-    # Guess the order...
+    if interference_order is None:
+        # Guess the order...
 
-    # mask input data
-    mask = (wavelengths >= lambda_start) & (wavelengths <= lambda_stop)
-    wavelengths_masked = wavelengths[mask]
-    r_index_masked = r_index[mask]
-    intensities_masked = intensities[mask]
+        # mask input data
+        mask = (wavelengths >= wavelength_start) & (wavelengths <= wavelength_stop)
+        wavelengths_masked = wavelengths[mask]
+        r_index_masked = r_index[mask]
+        intensities_masked = intensities[mask]
 
 
-
-
-    min_difference = np.inf
-    best_m = None
-    best_h_values = None
-
-    if plot:
-        plt.figure()
-        plt.ylabel(r'$h$ ($\mathrm{{nm}}$)')
-        plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
-
-    for m in range(0, max_tested_order+1):
-        h_values = _thicknesses_scheludko_at_order(wavelengths_masked,
-                                                intensities_masked,
-                                                m, r_index_masked)
-
-        difference = np.max(h_values) - np.min(h_values)
-
-        print(f"h-difference for m={m}: {difference:.1f} nm")
-
-        if difference < min_difference:
-            min_difference = difference
-            best_m = m
-            best_h_values = h_values
+        min_difference = np.inf
+        best_m = None
+        best_h_values = None
 
         if plot:
-            plt.plot(wavelengths_masked, h_values,'.', markersize=3, label=f"Épaisseur du film (Scheludko, m={m})")
+            plt.figure()
+            plt.ylabel(r'$h$ ($\mathrm{{nm}}$)')
+            plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
+
+        for m in range(0, max_tested_order+1):
+            h_values = _thicknesses_scheludko_at_order(wavelengths_masked,
+                                                       intensities_masked,
+                                                       m,
+                                                       r_index_masked)
+
+            difference = np.max(h_values) - np.min(h_values)
+
+            print(f"h-difference for m={m}: {difference:.1f} nm")
+
+            if difference < min_difference:
+                min_difference = difference
+                best_m = m
+                best_h_values = h_values
+
+            if plot:
+                plt.plot(wavelengths_masked, h_values,'.', markersize=3, label=f"Épaisseur du film (Scheludko, m={m})")
+    else:
+        h_values = _thicknesses_scheludko_at_order(wavelengths_masked,
+                                                   intensities_masked,
+                                                   interference_order,
+                                                   r_index_masked)
+        best_m = interference_order
+        best_h_values = h_values
 
 
-    print(f"Optimized: m={best_m}")
 
     # Compute the thickness for the selected order
 
