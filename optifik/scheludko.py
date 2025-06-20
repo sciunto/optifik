@@ -288,14 +288,14 @@ def thickness_from_scheludko(wavelengths,
         wavelengths_masked = wavelengths[mask]
         r_index_masked = r_index[mask]
         intensities_masked = intensities[mask]
-        intensities_I_min_masked = intensities_void[mask]
+        intensities_void_masked = intensities_void[mask]
 
         interference_order = 0
         thickness_values = _thicknesses_scheludko_at_order(wavelengths_masked,
                                                      intensities_masked,
                                                      interference_order,
                                                      r_index_masked,
-                                                     Imin=intensities_I_min_masked)
+                                                     intensities_void=intensities_void_masked)
 
     elif interference_order > 0:
         h_values = _thicknesses_scheludko_at_order(wavelengths_masked,
@@ -312,8 +312,8 @@ def thickness_from_scheludko(wavelengths,
 
     # Delta
     if interference_order == 0:
-        num = intensities_masked - np.min(intensities_I_min_masked)
-        denom = np.max(intensities_masked) - np.min(intensities_I_min_masked)
+        num = intensities_masked - np.min(intensities_void_masked)
+        denom = np.max(intensities_masked) - np.min(intensities_void_masked)
     else:
         num = intensities_masked - np.min(intensities_masked)
         denom = np.max(intensities_masked) - np.min(intensities_masked)
@@ -340,7 +340,8 @@ def thickness_from_scheludko(wavelengths,
 
         plt.figure()
         plt.plot(wavelengths_masked, Delta_from_data,
-                 'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
+                 'bo-', markersize=2,
+                 label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
 
         # Scheludko
         label = rf'$\mathrm{{Scheludko}}\ (h = {np.mean(thickness_values):.1f} \pm {np.std(thickness_values):.1f}\ \mathrm{{nm}})$'
@@ -348,7 +349,9 @@ def thickness_from_scheludko(wavelengths,
                  'go-', markersize=2, label=label)
         # Fit
         label = rf'$\mathrm{{Fit}}\ (h = {fitted_h:.1f}\pm {std_err:.1f} \ \mathrm{{nm}})$'
-        plt.plot(wavelengths_masked,  Delta_values, 'ro-', markersize=2, label=label)
+        plt.plot(wavelengths_masked,  Delta_values,
+                 'ro-', markersize=2,
+                 label=label)
 
         plt.legend()
         plt.ylabel(r'$\Delta$')

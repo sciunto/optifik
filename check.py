@@ -41,7 +41,7 @@ def minmax():
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
 
-    lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
+    lambdas, intensities = io.load_spectrum(spectrum_file, wavelength_min=450)
     plot_spectrum(lambdas, intensities, title='Raw, cropped')
 
     smoothed_intensities = smooth_intensities(intensities)
@@ -79,7 +79,7 @@ def play_order1():
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
 
-    lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
+    lambdas, intensities = io.load_spectrum(spectrum_file, wavelength_min=450)
     plot_spectrum(lambdas, intensities, title='Raw, cropped')
 
     smoothed_intensities = smooth_intensities(intensities)
@@ -129,7 +129,7 @@ def play_order0():
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
 
-    lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
+    lambdas, intensities = io.load_spectrum(spectrum_file, wavelength_min=450)
     plot_spectrum(lambdas, intensities, title='Raw, cropped')
 
 
@@ -186,7 +186,7 @@ def check_SV1():
 
         spectre_file = os.path.join(DATA_FOLDER, fn)
 
-        lambdas, raw_intensities = load_spectrum(spectre_file, lambda_min=450)
+        lambdas, raw_intensities = load_spectrum(spectre_file, wavelength_min=450)
 
         ##### Affichage du spectre lissé #####
 

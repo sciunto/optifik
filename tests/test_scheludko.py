@@ -17,7 +17,7 @@ def dataset1():
     expected = 777.07
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index = 1.324188 + 3102.060378 / (lambdas**2)
 
@@ -97,7 +97,7 @@ def test_scheludko_2peaks():
     expected = 495.69
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
 
@@ -127,14 +127,14 @@ def test_order0():
     expected = 115.33
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
     prominence = 0.03
-    
-    
+
+
     File_I_min = 'tests/spectre_trou/000043641.xy'
-    _, intensities_void = load_spectrum(File_I_min, lambda_min=450)
+    _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
 
 
     w_start, w_stop = None, None

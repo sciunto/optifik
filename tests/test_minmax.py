@@ -14,7 +14,7 @@ def test_minmax_ransac():
     expected = 1338.35
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
 
@@ -36,7 +36,7 @@ def test_minmax_linreg():
     expected = 1338.35
 
     spectrum_path = os.path.join(FOLDER, FILE_NAME)
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
 

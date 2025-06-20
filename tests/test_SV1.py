@@ -23,7 +23,7 @@ def load():
 
 @pytest.mark.parametrize("spectrum_path, expected", load())
 def test_minmax(spectrum_path, expected):
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
 
     assert_equal(len(lambdas), len(smoothed_intensities))

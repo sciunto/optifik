@@ -24,11 +24,11 @@ def load(filename):
 #@pytest.mark.skip('...')
 @pytest.mark.parametrize("spectrum_path, expected", load('known_value.yaml'))
 def test_SV2o0_small_tol(spectrum_path, expected):
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
-    
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
+
     File_I_min = 'tests/spectre_trou/000043641.xy'
-    _, intensities_void = load_spectrum(File_I_min, lambda_min=450)
-    
+    _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
+
     smoothed_intensities = smooth_intensities(raw_intensities)
 
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
@@ -54,11 +54,11 @@ def test_SV2o0_small_tol(spectrum_path, expected):
 
 @pytest.mark.parametrize("spectrum_path, expected", load('known_value_large_tol.yaml'))
 def test_SV2o0_large_tol(spectrum_path, expected):
-    lambdas, raw_intensities = load_spectrum(spectrum_path, lambda_min=450)
-    
+    lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
+
     File_I_min = 'tests/spectre_trou/000043641.xy'
-    _, intensities_void = load_spectrum(File_I_min, lambda_min=450)
-    
+    _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
+
     smoothed_intensities = smooth_intensities(raw_intensities)
 
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
