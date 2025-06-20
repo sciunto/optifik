@@ -58,7 +58,6 @@ def thickness_from_minmax(wavelengths,
     peaks.sort()
 
     k_values = np.arange(len(peaks))
-    n_over_lambda = refractive_index[peaks][::-1] / wavelengths[peaks][::-1]
 
     if k_values.size < 2:
         # Can't fit if less than two points.
@@ -66,7 +65,10 @@ def thickness_from_minmax(wavelengths,
 
 
     if isinstance(refractive_index, np.ndarray):
-        refractive_index = refractive_index[peaks][::-1]
+        #refractive_index = refractive_index[peaks][::-1]
+        n_over_lambda = refractive_index[peaks][::-1] / wavelengths[peaks][::-1]
+    else:
+        n_over_lambda = refractive_index / wavelengths[peaks][::-1]
 
     if method.lower() == 'ransac':
         residual_threshold = 4e-5
