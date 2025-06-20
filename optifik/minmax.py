@@ -131,7 +131,7 @@ def thickness_from_minmax(wavelengths,
             fig, ax = plt.subplots()
 
             ax.set_xlabel('extremum n°')
-            ax.set_ylabel('1 / $\lambda$')
+            ax.set_ylabel('$n$($\lambda$) / $\lambda$')
             ax.plot(k_values, n_over_lambda, 's', label='Extrema')
             ax.plot(k_values, intercept + k_values * slope, label='Fit')
 

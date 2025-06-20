@@ -8,6 +8,9 @@ def load_spectrum(spectrum_path,
     """
     Load a spectrum file.
 
+
+    TODO : describe expected format
+
     Parameters
     ----------
     spectrum_path : string

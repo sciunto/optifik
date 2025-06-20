@@ -72,7 +72,7 @@ def play_order1():
     spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
 
 
-    spectrum_file = 'tests/spectraVictor2/order1/T10219.xy' #TEST#
+    spectrum_file = 'tests/spectraVictor2/order5/T5817.xy' #TEST#
 
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
@@ -112,13 +112,14 @@ def play_order0():
     spectrum_file = os.path.join(DATA_FOLDER, FILE_NAME)
 
 
-    spectrum_file = 'tests/spectraVictor2/order0/T14787.xy' #TEST#
+    spectrum_file = 'tests/spectraVictor2/order0/T16053.xy' #TEST#
 
     lambdas, intensities = io.load_spectrum(spectrum_file)
     plot_spectrum(lambdas, intensities, title='Raw')
 
     lambdas, intensities = io.load_spectrum(spectrum_file, lambda_min=450)
     plot_spectrum(lambdas, intensities, title='Raw, cropped')
+
 
     smoothed_intensities = smooth_intensities(intensities)
     plot_spectrum(lambdas, smoothed_intensities, title='Smoothed')
@@ -217,4 +218,5 @@ if __name__ == '__main__':
     #check_basic()
     #check_SV1()
     #play()
-    play_order0()
+    play_order1()
+    

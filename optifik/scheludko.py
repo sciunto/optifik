@@ -8,13 +8,13 @@ from .utils import OptimizeResult, setup_matplotlib
 from .analysis import finds_peak
 
 
-def thickness_scheludko_at_order(wavelengths,
+def _thicknesses_scheludko_at_order(wavelengths,
                                  intensities,
                                  interference_order,
                                  refractive_index,
                                  Imin=None):
     """
-    Compute the film thickness for a given interference order.
+    Compute thicknesses vs wavelength for a given interference order.
 
     Parameters
     ----------
@@ -56,7 +56,7 @@ def thickness_scheludko_at_order(wavelengths,
     return prefactor * (term1 + term2)
 
 
-def Delta(wavelengths, thickness, interference_order, refractive_index):
+def _Delta(wavelengths, thickness, interference_order, refractive_index):
     """
     Compute the Delta values.
 
@@ -103,7 +103,7 @@ def Delta(wavelengths, thickness, interference_order, refractive_index):
     return (A * (1 + alpha)) / (1 + A * alpha)
 
 
-def Delta_fit(xdata, thickness, interference_order):
+def _Delta_fit(xdata, thickness, interference_order):
     """
     Wrapper on Delta() for curve_fit.
 
@@ -123,7 +123,7 @@ def Delta_fit(xdata, thickness, interference_order):
 
     """
     lambdas, r_index = xdata
-    return Delta(lambdas, thickness, interference_order, r_index)
+    return _Delta(lambdas, thickness, interference_order, r_index)
 
 
 
@@ -156,9 +156,11 @@ def thickness_from_scheludko(wavelengths,
     if plot:
         setup_matplotlib()
 
+    # A bit extreme...
     max_tested_order = 12
     r_index = refractive_index
 
+    # idx_min idx max
     peaks_min, peaks_max = finds_peak(wavelengths, intensities,
                                       min_peak_prominence=min_peak_prominence,
                                       plot=plot)
@@ -181,11 +183,17 @@ def thickness_from_scheludko(wavelengths,
     lambda_start = min(lambda_min, lambda_max)
     lambda_stop = max(lambda_min, lambda_max)
 
+
+    # Guess the order...
+
     # mask input data
     mask = (wavelengths >= lambda_start) & (wavelengths <= lambda_stop)
     wavelengths_masked = wavelengths[mask]
     r_index_masked = r_index[mask]
     intensities_masked = intensities[mask]
+
+
+
 
     min_difference = np.inf
     best_m = None
@@ -197,7 +205,7 @@ def thickness_from_scheludko(wavelengths,
         plt.xlabel(r'$\lambda$ ($ \mathrm{nm} $)')
 
     for m in range(0, max_tested_order+1):
-        h_values = thickness_scheludko_at_order(wavelengths_masked,
+        h_values = _thicknesses_scheludko_at_order(wavelengths_masked,
                                                 intensities_masked,
                                                 m, r_index_masked)
 
@@ -216,30 +224,32 @@ def thickness_from_scheludko(wavelengths,
 
     print(f"Optimized: m={best_m}")
 
+    # Compute the thickness for the selected order
+
     # Delta
     num = intensities_masked - np.min(intensities_masked)
     denom = np.max(intensities_masked) - np.min(intensities_masked)
-    DeltaVrai = num / denom
+    Delta_from_data = num / denom
 
-    # DeltaVrai = (intensities_masked -np.min(intensities_masked))/(np.max(intensities_masked) -np.min(intensities_masked))
-    # DeltaVrai = (intensities_raw_masked -np.min(intensities_raw_masked))/(np.max(intensities_raw_masked) -np.min(intensities_raw_masked))
+    # Delta_from_data = (intensities_masked -np.min(intensities_masked))/(np.max(intensities_masked) -np.min(intensities_masked))
+    # Delta_from_data = (intensities_raw_masked -np.min(intensities_raw_masked))/(np.max(intensities_raw_masked) -np.min(intensities_raw_masked))
 
-    DeltaScheludko = Delta(wavelengths_masked,
+    DeltaScheludko = _Delta(wavelengths_masked,
                            np.mean(best_h_values),
                            best_m,
                            r_index_masked)
 
 
     xdata = (wavelengths_masked, r_index_masked)
-    popt, pcov = curve_fit(lambda x, h: Delta_fit(x, h, m), xdata, DeltaVrai, p0=[np.mean(best_h_values)])
+    popt, pcov = curve_fit(lambda x, h: _Delta_fit(x, h, m), xdata, Delta_from_data, p0=[np.mean(best_h_values)])
     fitted_h = popt[0]
     std_err = np.sqrt(pcov[0][0])
 
     if plot:
-        Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
+        Delta_values = _Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
 
         plt.figure()
-        plt.plot(wavelengths_masked, DeltaVrai,
+        plt.plot(wavelengths_masked, Delta_from_data,
                  'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
 
         # Scheludko
@@ -294,7 +304,7 @@ def thickness_for_order0(wavelengths,
 
     # We assume to be at order zero.
     best_m = 0
-    best_h_values = thickness_scheludko_at_order(wavelengths_masked,
+    best_h_values = _thicknesses_scheludko_at_order(wavelengths_masked,
                                                  intensities_masked,
                                                  best_m,
                                                  r_index_masked,
@@ -311,21 +321,21 @@ def thickness_for_order0(wavelengths,
     # Delta
     num = intensities_masked - np.min(intensities_I_min_masked)
     denom = np.max(intensities_masked) - np.min(intensities_I_min_masked)
-    DeltaVrai = num / denom
+    Delta_from_data = num / denom
 
-    DeltaScheludko = Delta(wavelengths_masked, np.mean(best_h_values), best_m, r_index_masked)
+    DeltaScheludko = _Delta(wavelengths_masked, np.mean(best_h_values), best_m, r_index_masked)
     #print(np.mean(best_h_values),np.std(best_h_values))
 
     xdata = (wavelengths_masked, r_index_masked)
-    popt, pcov = curve_fit(lambda x, h: Delta_fit(x, h, best_m), xdata, DeltaVrai, p0=[np.mean(best_h_values)])
+    popt, pcov = curve_fit(lambda x, h: _Delta_fit(x, h, best_m), xdata, Delta_from_data, p0=[np.mean(best_h_values)])
     fitted_h = popt[0]
     std_err = np.sqrt(pcov[0][0])
 
     if plot:
-        Delta_values = Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
+        Delta_values = _Delta(wavelengths_masked, fitted_h, best_m, r_index_masked)
 
         plt.figure()
-        plt.plot(wavelengths_masked, DeltaVrai,
+        plt.plot(wavelengths_masked, Delta_from_data,
                  'bo-', markersize=2, label=r'$\mathrm{{Smoothed}}\ \mathrm{{Data}}$')
 
         # Scheludko
