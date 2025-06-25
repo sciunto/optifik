@@ -13,6 +13,7 @@ Contents
 
    installation
    api_reference
+   snippets
    examples
 
 Indices and tables

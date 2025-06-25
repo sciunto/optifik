@@ -44,8 +44,8 @@ docs = [
   "sphinx-design>=0.5",
   "nbsphinx",
   "jupyter",
-  "ipykernel"
-  #"matplotlib>=3.0", # For plots in docstring
+  "ipykernel",
+  "sphinx-book-theme",
 ]
 
 [tool.setuptools.package-data]
