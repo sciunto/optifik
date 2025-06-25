@@ -46,8 +46,7 @@ pip install -e ".[docs]"
 
 * Build the doc
 ```
-cd docs
-make html
+sphinx-build -b html docs docs/_build/html
 ```
 
 ## Licence
