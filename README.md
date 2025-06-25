@@ -1,10 +1,8 @@
-Optifik 
+# Optifik
 
 
-Current stable version 0.1.1
 
-
-# Installation
+## Installation
 
 The use of pip must be limited to virtualenv
 
@@ -25,7 +23,7 @@ pip install .
 ```
 
 
-# For contributors
+## For contributors
 
 * Install an editable version
 ```
