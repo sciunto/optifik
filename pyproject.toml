@@ -42,6 +42,9 @@ docs = [
   "sphinx-autodoc-typehints>=2.0",
   "sphinx-copybutton>=0.5",
   "sphinx-design>=0.5",
+  "nbsphinx",
+  "jupyter",
+  "ipykernel"
   #"matplotlib>=3.0", # For plots in docstring
 ]
 
