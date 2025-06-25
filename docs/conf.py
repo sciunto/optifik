@@ -26,6 +26,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'nbsphinx',
+    'sphinx_copybutton',
     'sphinx.ext.mathjax',
 ]
 
@@ -49,12 +50,6 @@ html_theme = "sphinx_book_theme"
 html_static_path = ['_static']
 
 html_logo = "_static/logo.png"
-html_theme_options = {
-    "logo_only": True,
-    "display_version": True,
-}
-
-
 
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
