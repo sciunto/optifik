@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>optifik.fft &#8212; optifik  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for optifik.fft</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.fftpack</span><span class="w"> </span><span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">ifft</span><span class="p">,</span> <span class="n">fftfreq</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptimizeResult</span><span class="p">,</span> <span class="n">setup_matplotlib</span>
+
+
+
+<div class="viewcode-block" id="thickness_from_fft">
+<a class="viewcode-back" href="../../api_reference.html#optifik.fft.thickness_from_fft">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">thickness_from_fft</span><span class="p">(</span><span class="n">wavelengths</span><span class="p">,</span> <span class="n">intensities</span><span class="p">,</span>
+                       <span class="n">refractive_index</span><span class="p">,</span>
+                       <span class="n">num_half_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">plot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine the tickness by Fast Fourier Transform.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wavelengths : array</span>
+<span class="sd">        Wavelength values in nm.</span>
+<span class="sd">    intensities : array</span>
+<span class="sd">        Intensity values.</span>
+<span class="sd">    refractive_index : scalar, optional</span>
+<span class="sd">        Value of the refractive index of the medium.</span>
+<span class="sd">    num_half_space : scalar, optional</span>
+<span class="sd">        Number of points to compute FFT&#39;s half space.</span>
+<span class="sd">        If `None`, default corresponds to `10*len(wavelengths)`.</span>
+<span class="sd">    plot : boolean, optional</span>
+<span class="sd">        Show plot of the transformed signal and the peak detection.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Instance of `OptimizeResult` class.</span>
+<span class="sd">        The attribute `thickness` gives the thickness value in nm.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+        <span class="n">setup_matplotlib</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">num_half_space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">num_half_space</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wavelengths</span><span class="p">)</span>
+
+    <span class="c1"># FFT requires evenly spaced data.</span>
+    <span class="c1"># So, we interpolate the signal.</span>
+    <span class="c1"># Interpolate to get a linear increase of 1 / wavelengths.</span>
+    <span class="n">inverse_wavelengths_times_n</span> <span class="o">=</span> <span class="n">refractive_index</span> <span class="o">/</span> <span class="n">wavelengths</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">inverse_wavelengths_times_n</span><span class="p">,</span> <span class="n">intensities</span><span class="p">)</span>
+
+    <span class="n">inverse_wavelengths_linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">inverse_wavelengths_times_n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                           <span class="n">inverse_wavelengths_times_n</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                           <span class="mi">2</span><span class="o">*</span><span class="n">num_half_space</span><span class="p">)</span>
+    <span class="n">intensities_linspace</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">inverse_wavelengths_linspace</span><span class="p">)</span>
+
+
+    <span class="c1"># Perform FFT</span>
+    <span class="n">density</span> <span class="o">=</span> <span class="p">(</span><span class="n">inverse_wavelengths_times_n</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">inverse_wavelengths_times_n</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_half_space</span><span class="p">)</span>
+    <span class="n">inverse_wavelengths_fft</span> <span class="o">=</span> <span class="n">fftfreq</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_half_space</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span>
+    <span class="n">intensities_fft</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">intensities_linspace</span><span class="p">)</span>
+
+    <span class="c1"># The FFT is symetrical over [0:N] and [N:2N].</span>
+    <span class="c1"># Keep over [N:2N], ie for positive freq.</span>
+    <span class="n">intensities_fft</span> <span class="o">=</span> <span class="n">intensities_fft</span><span class="p">[</span><span class="n">num_half_space</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">num_half_space</span><span class="p">]</span>
+    <span class="n">inverse_wavelengths_fft</span> <span class="o">=</span> <span class="n">inverse_wavelengths_fft</span><span class="p">[</span><span class="n">num_half_space</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">num_half_space</span><span class="p">]</span>
+
+    <span class="n">idx_max_fft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">intensities_fft</span><span class="p">))</span>
+    <span class="n">freq_max</span> <span class="o">=</span> <span class="n">inverse_wavelengths_fft</span><span class="p">[</span><span class="n">idx_max_fft</span><span class="p">]</span>
+
+    <span class="n">thickness_fft</span> <span class="o">=</span> <span class="n">freq_max</span> <span class="o">/</span> <span class="mf">2.</span>
+
+    <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">inverse_wavelengths_fft</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">intensities_fft</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freq_max</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">intensities_fft</span><span class="p">[</span><span class="n">idx_max_fft</span><span class="p">]),</span> <span class="s1">&#39;o&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;FFT($I^*$)&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Thickness=</span><span class="si">{</span><span class="n">thickness_fft</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">OptimizeResult</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">thickness_fft</span><span class="p">,)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">optifik</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, F. Boulogne et al..
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
