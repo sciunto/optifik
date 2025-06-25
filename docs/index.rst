@@ -13,6 +13,7 @@ Contents
    :maxdepth: 2
    :caption: Documentation
 
+   generalities
    installation
    api_reference
    examples
