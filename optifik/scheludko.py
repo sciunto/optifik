@@ -205,7 +205,7 @@ def thickness_from_scheludko(wavelengths,
     wavelength_start : scalar, optional
         Starting value of a monotonic branch.
         Mandatory if interference_order != 0.
-    wavelength_start : scalar, optional
+    wavelength_stop : scalar, optional
         Stoping value of a monotonic branch.
         Mandatory if interference_order != 0.
     interference_order : scalar, optional
