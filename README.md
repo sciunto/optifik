@@ -1,5 +1,7 @@
 # Optifik
 
+TODO: write a paragraph here...
+
 
 This library replaces oospectro.
 
@@ -48,3 +50,7 @@ cd docs
 make html
 ```
 
+## Licence
+
+The source code is released under the GNU General Public License v3.0.
+See LICENSE for details.

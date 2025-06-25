@@ -6,7 +6,7 @@ authors = [
   { name = "François Boulogne", email = "francois.boulogne@cnrs.fr" },
   { name = "Victor Ziapkoff", email = "victor.ziapkoff@universite-paris-saclay.fr" },
 ]
-license = "GPL-3.0-or-later"
+license = "GPL-3.0"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
