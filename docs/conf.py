@@ -19,9 +19,16 @@ author = 'F. Boulogne et al.'
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'numpydoc',  # Doit être après 'autodoc'
+    'myst_parser',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
 ]
+
+numpydoc_show_inherited_class_members = True
+numpydoc_use_plots = False  # Plots in doctring
+numpydoc_class_members_toctree = False
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
