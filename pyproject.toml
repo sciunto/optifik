@@ -13,6 +13,7 @@ dependencies = [
   "numpy>=1.10.0",
   "scipy>=1.1.0",
   "matplotlib>=1.3.1",
+  "scikit-image>=0.20",
 ]
 
 [tool.setuptools]
@@ -30,6 +31,7 @@ Issues = "https://github.com/sciunto-org/optifik/issues"
 dev = [
   "pytest",
   "pytest-cov",
+  "pyyaml",
   "bumpver"
 ]
 
