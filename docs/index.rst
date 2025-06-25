@@ -6,17 +6,16 @@ a Python library for deducing a thickness
 from an interferometric spectrum.
 
 
-Contents
---------
-
 .. toctree::
    :maxdepth: 2
-   :caption: Documentation
+   :caption: Table of Content
 
    generalities
    installation
    api_reference
    examples
+   cite
+   ack_licence
 
 Indices and tables
 ------------------
