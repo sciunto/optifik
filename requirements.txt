@@ -1,6 +1,9 @@
 numpy
 scipy
 matplotlib
-#oospectro
 pandas
 scikit-image
+# numpydoc
+# sphinx
+# pyyaml
+# pytest
