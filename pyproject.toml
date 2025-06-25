@@ -1,6 +1,6 @@
 [project]
 name = "optifik"
-version = "0.1.0"
+version = "0.1.1"
 description = "Compute film thickness from interferometry"
 authors = [
   { name = "François Boulogne", email = "francois.boulogne@cnrs.fr" },
@@ -30,13 +30,13 @@ push = false
 [bumpver.file_patterns]
 "pyproject.toml" = [
     'current_version = "{version}"',
+    'version = "{version}"',
 ]
 "optifik/__init__.py" = [
-    'version="{pep440_version}",',
+    '^__version__ = "{version}"$,',
 ]
 "README.md" = [
-    '{version}',
-    '{pep440_version}',
+    '^Current stable version {version}',
 ]
 
 

@@ -1,4 +1,7 @@
-Optifik version 0.1.0
+Optifik 
+
+
+Current stable version 0.1.1
 
 
 # Installation
