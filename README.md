@@ -18,7 +18,7 @@ pip install optifik
 
 * From tarball
 ```
-pip install /chemin/vers/optifik-0.1.0.tar.gz
+pip install /path/to/optifik-0.1.0.tar.gz
 ```
 
 * From the source code
