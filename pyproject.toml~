@@ -19,7 +19,6 @@ dependencies = [
 packages = ["optifik"]
 
 
-
 [project.urls]
 Homepage = "https://github.com/votrecompte/votreprojet"
 Documentation = "https://github.com/votrecompte/votreprojet#readme"
