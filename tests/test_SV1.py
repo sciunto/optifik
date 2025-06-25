@@ -1,23 +1,25 @@
-import os.path
+import pytest
+import yaml
+from pathlib import Path
+
 import numpy as np
 from numpy.testing import assert_allclose, assert_equal
-import pytest
 
 from optifik.minmax import thickness_from_minmax
 from optifik.io import load_spectrum
 from optifik.analysis import smooth_intensities
 from optifik.analysis import finds_peak
 
-import yaml
-
 
 def load():
-    FOLDER = os.path.join('tests', 'spectraVictor1')
+    test_data_dir = Path(__file__).parent.parent / 'data'
+    FOLDER = test_data_dir / 'spectraVictor1'
+    yaml_file = FOLDER / 'known_value.yaml'
 
-    yaml_file = os.path.join(FOLDER, 'known_value.yaml')
     with open(yaml_file, "r") as yaml_file:
         thickness_dict = yaml.safe_load(yaml_file)
-    data = [(os.path.join(FOLDER, fn), val) for fn, val in thickness_dict.items()]
+
+    data = [(FOLDER / fn, val) for fn, val in thickness_dict.items()]
     return data
 
 

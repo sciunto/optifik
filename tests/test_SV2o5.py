@@ -1,27 +1,29 @@
-import os.path
+import pytest
+import yaml
+from pathlib import Path
+
 import numpy as np
 from numpy.testing import assert_allclose
-import pytest
 
 from optifik.scheludko import thickness_from_scheludko
 from optifik.scheludko import get_default_start_stop_wavelengths
 from optifik.io import load_spectrum
 from optifik.analysis import smooth_intensities
 
-import yaml
 
+def load(filename):
+    test_data_dir = Path(__file__).parent.parent / 'data'
+    FOLDER = test_data_dir / 'spectraVictor2' / 'order5'
 
-def load():
-    FOLDER = os.path.join('tests', 'spectraVictor2', 'order5')
-
-    yaml_file = os.path.join(FOLDER, 'known_value.yaml')
+    yaml_file = FOLDER / filename
     with open(yaml_file, "r") as yaml_file:
         thickness_dict = yaml.safe_load(yaml_file)
-    data = [(os.path.join(FOLDER, fn), val) for fn, val in thickness_dict.items()]
+    data = [(FOLDER / fn, val) for fn, val in thickness_dict.items()]
     return data
 
 
-@pytest.mark.parametrize("spectrum_path, expected", load())
+#@pytest.mark.skip('...')
+@pytest.mark.parametrize("spectrum_path, expected", load('known_value.yaml'))
 def test_SV2o5(spectrum_path, expected):
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)

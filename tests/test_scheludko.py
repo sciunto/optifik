@@ -1,7 +1,8 @@
-import os.path
+import pytest
+from pathlib import Path
+
 import numpy as np
 from numpy.testing import assert_allclose
-import pytest
 
 from optifik.scheludko import thickness_from_scheludko
 from optifik.scheludko import get_default_start_stop_wavelengths
@@ -9,14 +10,16 @@ from optifik.analysis import smooth_intensities
 from optifik.io import load_spectrum
 
 
+@pytest.fixture
+def test_data_dir():
+    return Path(__file__).parent.parent / 'data'
+
 
 @pytest.fixture
-def dataset1():
-    FOLDER = os.path.join('tests', 'basic')
-    FILE_NAME = '000005253.xy'
+def dataset1(test_data_dir):
+    spectrum_path = test_data_dir / 'basic' / '000005253.xy'
     expected = 777.07
 
-    spectrum_path = os.path.join(FOLDER, FILE_NAME)
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index = 1.324188 + 3102.060378 / (lambdas**2)
@@ -91,12 +94,10 @@ def test_scheludko_4peaks(dataset1):
     assert_allclose(result.thickness, expected, rtol=1e-1)
 
 
-def test_scheludko_2peaks():
-    FOLDER = os.path.join('tests', 'basic')
-    FILE_NAME = '000006544.xy'
+def test_scheludko_2peaks(test_data_dir):
+    spectrum_path = test_data_dir / 'basic' / '000006544.xy'
     expected = 495.69
 
-    spectrum_path = os.path.join(FOLDER, FILE_NAME)
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
@@ -121,19 +122,17 @@ def test_scheludko_2peaks():
     assert_allclose(result.thickness, expected, rtol=1e-1)
 
 
-def test_order0():
-    FOLDER = os.path.join('tests', 'basic')
-    FILE_NAME = '000018918.xy'
+def test_order0(test_data_dir):
+    spectrum_path = test_data_dir / 'basic' / '000018918.xy'
     expected = 115.33
 
-    spectrum_path = os.path.join(FOLDER, FILE_NAME)
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
     prominence = 0.03
 
 
-    File_I_min = os.path.join('tests', 'spectraVictor2', 'void.xy')
+    File_I_min = test_data_dir / 'basic' / 'void.xy'
     _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
 
 

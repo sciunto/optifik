@@ -1,32 +1,35 @@
-import os.path
+import pytest
+import yaml
+from pathlib import Path
+
 import numpy as np
 from numpy.testing import assert_allclose
-import pytest
 
 from optifik.scheludko import thickness_from_scheludko
 from optifik.scheludko import get_default_start_stop_wavelengths
 from optifik.io import load_spectrum
 from optifik.analysis import smooth_intensities
 
-import yaml
-
 
 def load(filename):
-    FOLDER = os.path.join('tests', 'spectraVictor2', 'order0')
+    test_data_dir = Path(__file__).parent.parent / 'data'
+    FOLDER = test_data_dir / 'spectraVictor2' / 'order0'
 
-    yaml_file = os.path.join(FOLDER, filename)
+    yaml_file = FOLDER / filename
     with open(yaml_file, "r") as yaml_file:
         thickness_dict = yaml.safe_load(yaml_file)
-    data = [(os.path.join(FOLDER, fn), val) for fn, val in thickness_dict.items()]
+    data = [(FOLDER / fn, val) for fn, val in thickness_dict.items()]
     return data
 
 
 #@pytest.mark.skip('...')
 @pytest.mark.parametrize("spectrum_path, expected", load('known_value.yaml'))
 def test_SV2o0_small_tol(spectrum_path, expected):
+    test_data_dir = Path(__file__).parent.parent / 'data'
+
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
 
-    File_I_min = os.path.join('tests', 'spectraVictor2', 'void.xy')
+    File_I_min = test_data_dir / 'spectraVictor2' / 'void.xy'
     _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
 
     smoothed_intensities = smooth_intensities(raw_intensities)
@@ -35,12 +38,6 @@ def test_SV2o0_small_tol(spectrum_path, expected):
     prominence = 0.020
 
     w_start, w_stop = None, None
-    #w_start, w_stop = get_default_start_stop_wavelengths(lambdas,
-    #                                                     smoothed_intensities,
-    #                                                     refractive_index=r_index,
-    #                                                     min_peak_prominence=prominence,
-    #                                                     plot=False)
-
     result = thickness_from_scheludko(lambdas,
                                       smoothed_intensities,
                                       refractive_index=r_index,
@@ -54,9 +51,11 @@ def test_SV2o0_small_tol(spectrum_path, expected):
 
 @pytest.mark.parametrize("spectrum_path, expected", load('known_value_large_tol.yaml'))
 def test_SV2o0_large_tol(spectrum_path, expected):
+    test_data_dir = Path(__file__).parent.parent / 'data'
+
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
 
-    File_I_min = os.path.join('tests', 'spectraVictor2', 'void.xy')
+    File_I_min = test_data_dir / 'spectraVictor2' / 'void.xy'
     _, intensities_void = load_spectrum(File_I_min, wavelength_min=450)
 
     smoothed_intensities = smooth_intensities(raw_intensities)
@@ -65,12 +64,6 @@ def test_SV2o0_large_tol(spectrum_path, expected):
     prominence = 0.020
 
     w_start, w_stop = None, None
-#    w_start, w_stop = get_default_start_stop_wavelengths(lambdas,
-#                                                         smoothed_intensities,
-#                                                         refractive_index=r_index,
-#                                                         min_peak_prominence=prominence,
-#                                                         plot=False)
-
     result = thickness_from_scheludko(lambdas,
                                       smoothed_intensities,
                                       refractive_index=r_index,

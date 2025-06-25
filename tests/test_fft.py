@@ -1,19 +1,22 @@
-import os.path
+import pytest
+from pathlib import Path
+
 import numpy as np
 from numpy.testing import assert_allclose
-import pytest
 
 from optifik.fft import thickness_from_fft
 from optifik.analysis import smooth_intensities
 from optifik.io import load_spectrum
 
+@pytest.fixture
+def test_data_dir():
+    return Path(__file__).parent.parent / 'data'
 
-def test_FFT():
-    FOLDER = os.path.join('tests', 'basic')
-    FILE_NAME = '003582.xy'
+
+def test_FFT(test_data_dir):
+    spectrum_path = test_data_dir / 'basic' / '003582.xy'
     expected = 3524.51
 
-    spectrum_path = os.path.join(FOLDER, FILE_NAME)
     lambdas, raw_intensities = load_spectrum(spectrum_path, wavelength_min=450)
     smoothed_intensities = smooth_intensities(raw_intensities)
     r_index =  1.324188 + 3102.060378 / (lambdas**2)
@@ -24,5 +27,3 @@ def test_FFT():
     result = thickness_FFT.thickness
 
     assert_allclose(result, expected, rtol=1e-1)
-
-
