@@ -2,6 +2,13 @@
 * changer url doc dans pyproject et readme
 
 
+* turn scikit-image to optional dep
+
+
+* check ransac from scikit learn
+
+* test with the old spectra
+
 
 
 
