@@ -5,6 +5,9 @@ TODO: write a paragraph here...
 
 This library replaces oospectro.
 
+## Documentation
+
+<https://sciunto.github.io/optifik/>
 
 ## Installation
 

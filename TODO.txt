@@ -1,6 +1,5 @@
-# pyproject
 
-* changer url
+* changer url doc dans pyproject et readme
 
 
 
