@@ -161,7 +161,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="snippets.html">Snippets</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/test.html">FFT</a></li>
 </ul>
@@ -314,6 +313,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#presentation">Presentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware">Hardware</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
@@ -329,7 +330,24 @@ document.write(`
                   
   <section id="optifik-documentation">
 <h1>Optifik Documentation<a class="headerlink" href="#optifik-documentation" title="Link to this heading">#</a></h1>
-<p>Welcome to the documentation for <strong>Optifik</strong>, a Python library for</p>
+<p>Welcome to the documentation for <strong>Optifik</strong>,
+a Python library for deducing a thickness
+from an interferometric spectrum.</p>
+<section id="presentation">
+<h2>Presentation<a class="headerlink" href="#presentation" title="Link to this heading">#</a></h2>
+<p>We implemented three different methods,
+each of them being adapted to a range of thicknesses.</p>
+<ul class="simple">
+<li><p>FFT</p></li>
+<li><p>Minima and maxima</p></li>
+<li><p>Scheludko</p></li>
+</ul>
+<p>The physical grounds behind is explained in an article
+to appear soon!</p>
+</section>
+<section id="hardware">
+<h2>Hardware<a class="headerlink" href="#hardware" title="Link to this heading">#</a></h2>
+</section>
 <section id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
@@ -344,11 +362,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-optifik.fft">fft</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-optifik.minmax">minmax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-optifik.scheludko">scheludko</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="snippets.html">Snippets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="snippets.html#basic-optimization">Basic Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="snippets.html#constrained-optimization">Constrained Optimization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
@@ -404,6 +417,8 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#presentation">Presentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware">Hardware</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
