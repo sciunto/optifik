@@ -21,8 +21,7 @@ packages = ["optifik"]
 
 
 [project.urls]
-Homepage = "https://github.com/votrecompte/votreprojet"
-Documentation = "https://github.com/votrecompte/votreprojet#readme"
+Documentation = "https://sciunto.github.io/optifik/"
 Repository = "https://github.com/sciunto-org/optifik"
 Issues = "https://github.com/sciunto-org/optifik/issues"
 
