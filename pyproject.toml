@@ -1,9 +1,10 @@
 [project]
 name = "optifik"
 version = "0.1.0"
-description = "Projet scientifique pour des optimisations numériques"
+description = "Compute film thickness from interferometry"
 authors = [
-  { name = "François Boulogne", email = "francois.boulogne@cnrs.fr" }
+  { name = "François Boulogne", email = "francois.boulogne@cnrs.fr" },
+  { name = "Victor Ziapkoff", email = "victor.ziapkoff@universite-paris-saclay.fr" },
 ]
 license = "GPL-3.0-or-later"
 readme = "README.md"
@@ -13,18 +14,35 @@ dependencies = [
   "scipy",
 ]
 
+
+[project.urls]
+Homepage = "https://github.com/votrecompte/votreprojet"
+Documentation = "https://github.com/votrecompte/votreprojet#readme"
+Repository = "https://github.com/sciunto-org/optifik"
+Issues = "https://github.com/sciunto-org/optifik/issues"
+
+[tool.setuptools]
+packages = ["optifik"]
+
 [project.optional-dependencies]
 dev = [
   "pytest",
   "pytest-cov"
 ]
 
+[tool.setuptools.package-data]
+optifik = ["data/*"]
+
 [tool.pytest.ini_options]
-addopts = "-v --tb=short --disable-warnings"
+#addopts = "-v --tb=short --disable-warnings"
 testpaths = ["tests"]
-pythonpath = ["src"]
+python_files = "test_*.py"
+pythonpath = ["."]
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.coverage.run]
+source = ["optifik"]
+omit = ["optifik/tests/*"]
