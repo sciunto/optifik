@@ -1,6 +1,6 @@
 [project]
 name = "optifik"
-version = "0.1.1"
+version = "0.1.2"
 description = "Compute film thickness from interferometry"
 authors = [
   { name = "François Boulogne", email = "francois.boulogne@cnrs.fr" },
@@ -19,27 +19,6 @@ dependencies = [
 packages = ["optifik"]
 
 
-[tool.bumpver]
-current_version = "0.1.2"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit = true
-tag = true
-push = false
-
-
-[bumpver.file_patterns]
-"pyproject.toml" = [
-    'current_version = "{version}"',
-    'version = "{version}"',
-]
-"optifik/__init__.py" = [
-    '^__version__ = "{version}"$,',
-]
-"README.md" = [
-    '^Current stable version {version}',
-]
-
-
 
 [project.urls]
 Homepage = "https://github.com/votrecompte/votreprojet"
@@ -52,7 +31,7 @@ Issues = "https://github.com/sciunto-org/optifik/issues"
 dev = [
   "pytest",
   "pytest-cov",
-  "bumpver"
+  "poetry"
 ]
 
 docs = [
@@ -82,3 +61,4 @@ build-backend = "setuptools.build_meta"
 [tool.coverage.run]
 source = ["optifik"]
 omit = ["optifik/tests/*"]
+
