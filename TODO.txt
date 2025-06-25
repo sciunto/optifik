@@ -1,9 +1,17 @@
+# pyproject
+
+* changer url
+
+
+
+
+
 # Matplotlib
 
 * nom de fonction à introduire
 * Unités
 *  * en \star
-
+* verifier les fonts sans latex
 
 
 
