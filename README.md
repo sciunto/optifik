@@ -1,6 +1,8 @@
 # Optifik
 
 
+This library replaces oospectro.
+
 
 ## Installation
 

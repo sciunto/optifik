@@ -1,4 +1,10 @@
 
+# Step by step release process
+
+
+* Write changelog
+
+* Push version
 
 ```
 bumpver update --major	# MAJOR (breaking changes)	1.0.0 → 2.0.0
